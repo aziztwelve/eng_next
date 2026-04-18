@@ -14,6 +14,58 @@ export interface UpdateUserData {
   role: string;
 }
 
+export interface Course {
+  id: string;
+  title: string;
+  description: string;
+  level: string;
+  language: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Module {
+  id: string;
+  title: string;
+  description: string;
+  order_index: number;
+  lessons: Lesson[];
+}
+
+export interface Lesson {
+  id: string;
+  title: string;
+  description: string;
+  order_index: number;
+  steps: Step[];
+}
+
+export interface Step {
+  id: string;
+  type: string;
+  content: string;
+  order_index: number;
+}
+
+export interface CourseDetail extends Course {
+  modules: Module[];
+}
+
+export interface CreateCourseData {
+  title: string;
+  description: string;
+  level: string;
+  language: string;
+}
+
+export interface UpdateCourseData {
+  title: string;
+  description: string;
+  level: string;
+  language: string;
+}
+
 class AdminAPI {
   private getAuthHeader(): string {
     // Get token from cookie
@@ -78,6 +130,97 @@ class AdminAPI {
 
     if (!response.ok) {
       throw new Error('Failed to delete user');
+    }
+  }
+
+  // Course management
+  async listCourses(): Promise<{ courses: Course[]; total: number }> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses`, {
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch courses');
+    }
+
+    return response.json();
+  }
+
+  async getCourse(id: string): Promise<CourseDetail> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/${id}`, {
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch course');
+    }
+
+    return response.json();
+  }
+
+  async createCourse(data: CreateCourseData): Promise<Course> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create course');
+    }
+
+    return response.json();
+  }
+
+  async updateCourse(id: string, data: UpdateCourseData): Promise<Course> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update course');
+    }
+
+    return response.json();
+  }
+
+  async deleteCourse(id: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete course');
+    }
+  }
+
+  async publishCourse(id: string, publish: boolean): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/${id}/publish`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ publish }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to publish course');
     }
   }
 }
