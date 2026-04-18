@@ -43,8 +43,10 @@ export interface Lesson {
 
 export interface Step {
   id: string;
+  title: string;
   type: string;
   content: string;
+  video_id?: string;
   order_index: number;
 }
 

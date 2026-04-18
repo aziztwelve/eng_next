@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Module } from '@/lib/admin-api';
+import LessonManager from './LessonManager';
 
 interface ModuleManagerProps {
   courseId: string;
@@ -12,6 +13,7 @@ interface ModuleManagerProps {
 export default function ModuleManager({ courseId, modules, onUpdate }: ModuleManagerProps) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
+  const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [saving, setSaving] = useState(false);
@@ -83,6 +85,10 @@ export default function ModuleManager({ courseId, modules, onUpdate }: ModuleMan
     setDescription('');
   };
 
+  const toggleExpand = (moduleId: string) => {
+    setExpandedModule(expandedModule === moduleId ? null : moduleId);
+  };
+
   return (
     <div className="space-y-4">
       {/* Add Module Button */}
@@ -151,48 +157,52 @@ export default function ModuleManager({ courseId, modules, onUpdate }: ModuleMan
       {/* Modules List */}
       <div className="space-y-3">
         {modules.map((module, index) => (
-          <div key={module.id} className="border rounded-lg p-4 bg-white">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center space-x-2">
-                  <span className="text-gray-400 font-medium">{index + 1}.</span>
-                  <h3 className="font-medium">{module.title}</h3>
+          <div key={module.id} className="border rounded-lg bg-white">
+            <div className="p-4">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => toggleExpand(module.id)}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      {expandedModule === module.id ? '▼' : '▶'}
+                    </button>
+                    <span className="text-gray-400 font-medium">{index + 1}.</span>
+                    <h3 className="font-medium">{module.title}</h3>
+                  </div>
+                  {module.description && (
+                    <p className="text-sm text-gray-500 mt-1 ml-8">{module.description}</p>
+                  )}
+                  <p className="text-xs text-gray-400 mt-2 ml-8">
+                    {module.lessons?.length || 0} lessons
+                  </p>
                 </div>
-                {module.description && (
-                  <p className="text-sm text-gray-500 mt-1 ml-6">{module.description}</p>
-                )}
-                <p className="text-xs text-gray-400 mt-2 ml-6">
-                  {module.lessons?.length || 0} lessons
-                </p>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handleEdit(module)}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(module.id)}
-                  className="text-red-600 hover:text-red-800 text-sm font-medium"
-                >
-                  Delete
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handleEdit(module)}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(module.id)}
+                    className="text-red-600 hover:text-red-800 text-sm font-medium"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Lessons (placeholder) */}
-            {module.lessons && module.lessons.length > 0 && (
-              <div className="mt-4 ml-6 space-y-2">
-                {module.lessons.map((lesson, lessonIndex) => (
-                  <div key={lesson.id} className="text-sm text-gray-600 flex items-center">
-                    <span className="text-gray-400 mr-2">{index + 1}.{lessonIndex + 1}</span>
-                    {lesson.title}
-                    <span className="text-xs text-gray-400 ml-2">
-                      ({lesson.steps?.length || 0} steps)
-                    </span>
-                  </div>
-                ))}
+            {/* Lessons (expanded) */}
+            {expandedModule === module.id && (
+              <div className="border-t bg-gray-50 p-4">
+                <LessonManager
+                  moduleId={module.id}
+                  lessons={module.lessons || []}
+                  onUpdate={onUpdate}
+                />
               </div>
             )}
           </div>
