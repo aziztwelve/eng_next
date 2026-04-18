@@ -10,7 +10,7 @@ export default function NewCoursePage() {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [level, setLevel] = useState('beginner');
+  const [level, setLevel] = useState('A1');
   const [language, setLanguage] = useState('en');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -95,9 +95,12 @@ export default function NewCoursePage() {
                   disabled={saving}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
+                  <option value="A1">A1 - Beginner</option>
+                  <option value="A2">A2 - Elementary</option>
+                  <option value="B1">B1 - Intermediate</option>
+                  <option value="B2">B2 - Upper Intermediate</option>
+                  <option value="C1">C1 - Advanced</option>
+                  <option value="C2">C2 - Proficiency</option>
                 </select>
               </div>
 
