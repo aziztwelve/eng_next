@@ -4,50 +4,44 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-
-interface User {
-  id: string;
-  email: string;
-  full_name: string;
-  role: string;
-  created_at: string;
-}
+import { adminAPI, User } from '@/lib/admin-api';
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // TODO: Fetch from API
-    // Mock data for now
-    setTimeout(() => {
-      setUsers([
-        {
-          id: '1',
-          email: 'admin@test.com',
-          full_name: 'Admin User',
-          role: 'admin',
-          created_at: '2026-01-15',
-        },
-        {
-          id: '2',
-          email: 'instructor1@test.com',
-          full_name: 'John Instructor',
-          role: 'instructor',
-          created_at: '2026-02-20',
-        },
-        {
-          id: '3',
-          email: 'student1@test.com',
-          full_name: 'Alice Student',
-          role: 'student',
-          created_at: '2026-03-10',
-        },
-      ]);
-      setLoading(false);
-    }, 500);
+    loadUsers();
   }, []);
+
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      const data = await adminAPI.listUsers();
+      setUsers(data.users);
+    } catch (err) {
+      setError('Failed to load users');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (userId: string) => {
+    if (!confirm('Are you sure you want to delete this user?')) {
+      return;
+    }
+
+    try {
+      await adminAPI.deleteUser(userId);
+      setUsers(users.filter(u => u.id !== userId));
+    } catch (err) {
+      alert('Failed to delete user');
+      console.error(err);
+    }
+  };
 
   const filteredUsers = users.filter(
     (user) =>
@@ -70,6 +64,14 @@ export default function UsersPage() {
 
   if (loading) {
     return <div className="flex items-center justify-center h-full">Loading...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-red-600">{error}</div>
+      </div>
+    );
   }
 
   return (
@@ -129,13 +131,19 @@ export default function UsersPage() {
                     <td className="py-3 px-4 text-gray-600">
                       {new Date(user.created_at).toLocaleDateString()}
                     </td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-3 px-4 text-right space-x-2">
                       <Link
                         href={`/admin/users/${user.id}`}
                         className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                       >
                         Edit
                       </Link>
+                      <button
+                        onClick={() => handleDelete(user.id)}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
