@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Lesson } from '@/lib/admin-api';
+import { Lesson, adminAPI } from '@/lib/admin-api';
 import StepManager from './StepManager';
 
 interface LessonManagerProps {
@@ -23,8 +23,11 @@ export default function LessonManager({ moduleId, lessons, onUpdate }: LessonMan
 
     setSaving(true);
     try {
-      // TODO: Call API to create lesson
-      console.log('Creating lesson:', { moduleId, title, description });
+      await adminAPI.createLesson(moduleId, {
+        title,
+        description,
+        order_index: lessons.length,
+      });
       
       setShowAddForm(false);
       setTitle('');
@@ -48,8 +51,11 @@ export default function LessonManager({ moduleId, lessons, onUpdate }: LessonMan
 
     setSaving(true);
     try {
-      // TODO: Call API to update lesson
-      console.log('Updating lesson:', { id: editingLesson.id, title, description });
+      await adminAPI.updateLesson(editingLesson.id, {
+        title,
+        description,
+        order_index: editingLesson.order_index,
+      });
       
       setEditingLesson(null);
       setTitle('');
@@ -66,8 +72,7 @@ export default function LessonManager({ moduleId, lessons, onUpdate }: LessonMan
     if (!confirm('Are you sure you want to delete this lesson?')) return;
 
     try {
-      // TODO: Call API to delete lesson
-      console.log('Deleting lesson:', lessonId);
+      await adminAPI.deleteLesson(lessonId);
       onUpdate();
     } catch (err) {
       alert('Failed to delete lesson');

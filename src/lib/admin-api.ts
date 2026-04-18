@@ -298,6 +298,54 @@ class AdminAPI {
     }
   }
 
+  // Lesson management
+  async createLesson(moduleId: string, data: { title: string; description: string; order_index: number }): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/modules/${moduleId}/lessons`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create lesson');
+    }
+
+    return response.json();
+  }
+
+  async updateLesson(lessonId: string, data: { title: string; description: string; order_index: number }): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/lessons/${lessonId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update lesson');
+    }
+
+    return response.json();
+  }
+
+  async deleteLesson(lessonId: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/lessons/${lessonId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete lesson');
+    }
+  }
+
   // Video management
   async listVideos(): Promise<{ videos: Video[]; total: number }> {
     const response = await fetch(`${API_BASE_URL}/admin/videos`, {
