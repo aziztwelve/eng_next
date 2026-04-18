@@ -1,439 +1,183 @@
 # Admin Panel Documentation
 
-Административная панель для управления платформой E-Learning.
-
-## 🔐 Доступ
-
-**URL:** `http://localhost:3000/admin`
-
-**Тестовые учётные данные:**
-```
-Email: admin@test.com
-Password: password123
-```
-
-## 🏗️ Архитектура
-
-### Разделение контекстов (Вариант 3)
-
-Admin панель интегрирована в основное приложение, но использует:
-- Отдельный login (`/admin/login`)
-- Отдельную проверку роли
-- Изолированные routes (`/admin/*`)
-
-**Преимущества:**
-- Быстрая разработка
-- Общий backend API
-- Легко мигрировать в отдельный проект позже
-
-### Middleware Protection
-
-```typescript
-// src/middleware.ts
-export function middleware(request: NextRequest) {
-  if (pathname.startsWith('/admin')) {
-    // Skip login page
-    if (pathname === '/admin/login') {
-      return NextResponse.next();
-    }
-
-    // Check token and role
-    const token = request.cookies.get('auth_token')?.value;
-    const userRole = request.cookies.get('user_role')?.value;
-
-    if (!token || userRole !== 'admin') {
-      return NextResponse.redirect('/admin/login');
-    }
-  }
-}
-```
-
-## 📱 Страницы
-
-### Dashboard (`/admin`)
-
-**Функции:**
-- Статистика (users, courses, enrollments, active students)
-- Recent activity feed
-- Quick actions
-
-**Компоненты:**
-- Stats cards с иконками
-- Activity timeline
-- Quick action buttons
-
-### Login (`/admin/login`)
-
-**Функции:**
-- Email/password форма
-- Валидация admin роли в токене
-- Redirect на dashboard после входа
-
-**Security:**
-- Проверка `role: "admin"` в JWT payload
-- Отклонение non-admin пользователей
-- Токен сохраняется в cookies
-
-### Users (`/admin/users`)
-
-**Функции:**
-- Список всех пользователей
-- Search по email и имени
-- Filter по роли
-- Edit и Delete actions
-
-**API Integration:**
-```typescript
-// Load users
-const { users, total } = await adminAPI.listUsers();
-
-// Delete user
-await adminAPI.deleteUser(userId);
-```
-
-**UI Features:**
-- Role badges (цветные)
-- Search input
-- Action buttons (Edit, Delete)
-- Confirmation dialog для delete
-
-### Edit User (`/admin/users/[id]`)
-
-**Функции:**
-- Просмотр user details
-- Редактирование full_name
-- Изменение роли (student/instructor/admin)
-- Save и Cancel buttons
-
-**Form Fields:**
-- Email (read-only)
-- Full Name (editable)
-- Role (dropdown: student, instructor, admin)
-
-**API Integration:**
-```typescript
-// Load user
-const user = await adminAPI.getUser(params.id);
-
-// Update user
-await adminAPI.updateUser(params.id, {
-  full_name: fullName,
-  role: role,
-});
-```
-
-### Courses (`/admin/courses`) - Coming Soon
-
-**Planned Features:**
-- List all courses
-- Create new course
-- Edit course details
-- Manage modules and lessons
-- Publish/unpublish courses
-
-### Videos (`/admin/videos`) - Coming Soon
-
-**Planned Features:**
-- List all videos
-- Upload new videos
-- Edit video metadata
-- Delete videos
-- View usage in courses
-
-### Analytics (`/admin/analytics`) - Coming Soon
-
-**Planned Features:**
-- User growth charts
-- Course popularity
-- Completion rates
-- Revenue stats
-- Export reports
-
-## 🎨 UI Components
-
-### AdminSidebar
-
-**Location:** `src/components/admin/Sidebar.tsx`
-
-**Features:**
-- Navigation links с иконками
-- Active state highlighting
-- "Back to Site" link
-
-**Navigation Items:**
-- Dashboard
-- Users
-- Courses
-- Videos
-- Analytics
-
-### AdminHeader
-
-**Location:** `src/components/admin/Header.tsx`
-
-**Features:**
-- Page title
-- Notifications button
-- User profile dropdown
-- Admin email display
-
-### AdminLayout
-
-**Location:** `src/app/admin/layout.tsx`
-
-**Structure:**
-```tsx
-<div className="flex h-screen">
-  <AdminSidebar />
-  <div className="flex-1 flex flex-col">
-    <AdminHeader />
-    <main className="flex-1 overflow-y-auto p-6">
-      {children}
-    </main>
-  </div>
-</div>
-```
-
-## 🔌 API Client
-
-### Admin API Client
-
-**Location:** `src/lib/admin-api.ts`
-
-**Methods:**
-
-```typescript
-class AdminAPI {
-  // Get auth header from cookies
-  private getAuthHeader(): string;
-
-  // User management
-  async listUsers(): Promise<{ users: User[]; total: number }>;
-  async getUser(id: string): Promise<User>;
-  async updateUser(id: string, data: UpdateUserData): Promise<User>;
-  async deleteUser(id: string): Promise<void>;
-}
-
-export const adminAPI = new AdminAPI();
-```
-
-**Usage:**
-
-```typescript
-import { adminAPI } from '@/lib/admin-api';
-
-// In component
-const loadUsers = async () => {
-  try {
-    const data = await adminAPI.listUsers();
-    setUsers(data.users);
-  } catch (err) {
-    console.error('Failed to load users', err);
-  }
-};
-```
-
-## 🔒 Security
-
-### Authentication Flow
-
-1. User navigates to `/admin`
-2. Middleware checks cookies
-3. No token → redirect to `/admin/login`
-4. User enters credentials
-5. Frontend calls `POST /api/v1/auth/login`
-6. Backend returns JWT with `role: "admin"`
-7. Frontend validates role
-8. Token saved in cookies
-9. Redirect to `/admin`
-
-### Role-Based Access Control
-
-**Frontend:**
-- Middleware checks `user_role` cookie
-- Only `admin` role allowed
-
-**Backend:**
-- AuthMiddleware validates JWT
-- AdminOnlyMiddleware checks role
-- Returns 403 if not admin
-
-### Token Storage
-
-```typescript
-// Store token in cookies
-document.cookie = `auth_token=${token}; path=/; max-age=3600`;
-document.cookie = `user_role=${role}; path=/; max-age=3600`;
-```
-
-**Security considerations:**
-- HttpOnly cookies (planned)
-- Secure flag for HTTPS
-- SameSite=Strict
-- Short expiration (1 hour)
-
-## 🎯 Implementation Status
+## Overview
+Admin panel for managing users, courses, and videos. Built with Next.js 15, TypeScript, and Tailwind CSS.
+
+## Access
+- **URL:** `http://your-domain/admin`
+- **Login:** `http://your-domain/admin/login`
+- **Credentials:** admin@test.com / password123
+
+## Features
 
 ### Phase 1: Foundation ✅
-- [x] Admin routes structure
-- [x] Admin layout with sidebar
-- [x] Dashboard overview
-- [x] Middleware protection
-- [x] Admin login page
+- Admin layout with sidebar and header
+- Dashboard with stats cards
+- Middleware protection (auth + role check)
+- Separate admin login page
 
 ### Phase 2: User Management ✅
-- [x] Users list page
-- [x] User details/edit page
-- [x] Delete user functionality
-- [x] Search and filter
-- [x] API integration
+- List users with search and filters
+- Edit user (email, role)
+- Delete user with confirmation
+- Role management (admin, instructor, student)
 
-### Phase 3: Course Management 🚧
-- [ ] Courses list
-- [ ] Create course
-- [ ] Edit course
-- [ ] Manage modules/lessons
-- [ ] Content editor
+### Phase 3: Course Management ✅
+- List courses with search and status badges
+- Create course with form validation
+- Edit course with tabs (details + content)
+- Module/Lesson/Step management
+- Rich text editor for text steps
+- Video selector for video steps
+- Quiz builder (JSON textarea)
+- Publish/unpublish toggle
+- Delete course
 
-### Phase 4: Video Management 🚧
-- [ ] Videos list
-- [ ] Upload video
-- [ ] Edit metadata
-- [ ] Delete video
+### Phase 4: Video Management ✅
+- List videos with search, duration, size, status
+- Upload video with progress bar
+- Real file upload (multipart/form-data)
+- Edit video metadata
+- Delete video
+- Video usage tracking
 
-### Phase 5: Analytics 🚧
-- [ ] Dashboard stats
-- [ ] User analytics
-- [ ] Course analytics
-- [ ] Reports
+## Architecture
 
-### Phase 6: Polish 🚧
-- [ ] Responsive design
-- [ ] Loading states
-- [ ] Error handling
-- [ ] Toast notifications
-- [ ] Confirmation modals
+### Routes
+```
+/admin
+├── /login              # Admin login (separate from user login)
+├── /                   # Dashboard
+├── /users              # User list
+│   └── /[id]          # Edit user
+├── /courses            # Course list
+│   ├── /new           # Create course
+│   └── /[id]          # Edit course (with content management)
+└── /videos             # Video list
+    └── /upload        # Upload video
+```
 
-## 🚀 Future Enhancements
+### Authentication
+- Uses cookies: `auth_token` and `user_role`
+- Middleware checks both cookies on all `/admin/*` routes
+- Redirects to `/admin/login` if not authenticated or not admin
 
-### Short-term
-- [ ] Pagination for user list
-- [ ] Advanced filters
-- [ ] Bulk operations
-- [ ] Export to CSV
-- [ ] Activity logs
+### API Integration
+- API client: `lib/admin-api.ts`
+- Base URL: `process.env.NEXT_PUBLIC_API_URL` (http://204.168.248.33:8080)
+- All requests include `Authorization: Bearer <token>` header
 
-### Long-term
-- [ ] Separate admin project (Вариант 1)
-- [ ] Real-time notifications
-- [ ] Advanced analytics
-- [ ] A/B testing tools
-- [ ] Content moderation queue
+## Components
 
-## 🔄 Migration to Separate Project
+### Layout Components
+- `components/admin/Sidebar.tsx` - Navigation sidebar
+- `components/admin/Header.tsx` - Top header with user info
 
-Когда проект вырастет, легко мигрировать на Вариант 1:
+### Course Management Components
+- `components/admin/course/ModuleManager.tsx` - Module CRUD with expand/collapse
+- `components/admin/course/LessonManager.tsx` - Lesson CRUD nested in modules
+- `components/admin/course/StepManager.tsx` - Step CRUD (text/video/quiz types)
+- `components/admin/course/RichTextEditor.tsx` - Markdown editor with toolbar and preview
+- `components/admin/course/VideoSelector.tsx` - Video picker modal with search
 
+## Course Content Structure
+
+```
+Course
+├── Module 1
+│   ├── Lesson 1
+│   │   ├── Step 1 (text)
+│   │   ├── Step 2 (video)
+│   │   └── Step 3 (quiz)
+│   └── Lesson 2
+│       └── ...
+└── Module 2
+    └── ...
+```
+
+### Step Types
+1. **Text Step** - Rich text content with markdown support
+2. **Video Step** - Video player with video selector
+3. **Quiz Step** - Multiple choice questions (JSON format)
+
+## Course Levels
+Uses CEFR standard:
+- **A1** - Beginner
+- **A2** - Elementary
+- **B1** - Intermediate
+- **B2** - Upper Intermediate
+- **C1** - Advanced
+- **C2** - Proficiency
+
+## Course Status
+- **draft** - Not visible to students (default)
+- **published** - Visible to students
+
+## Video Upload
+- Accepts video files via file input
+- Shows upload progress bar
+- Uses `XMLHttpRequest` for progress tracking
+- Backend streams to video-service via gRPC
+- Stored in MinIO with metadata in PostgreSQL
+
+## Development
+
+### Environment Variables
+```env
+NEXT_PUBLIC_API_URL=http://204.168.248.33:8080
+```
+
+### Run Development Server
 ```bash
-# 1. Create new project
-npx create-next-app@latest eng_admin
-
-# 2. Copy admin code
-cp -r eng_next/src/app/admin/* eng_admin/src/app/
-cp -r eng_next/src/components/admin/* eng_admin/src/components/
-
-# 3. Update API URLs
-# Change from relative to absolute
-fetch('/api/v1/admin/users')
-→ fetch('http://api.example.com/api/v1/admin/users')
-
-# 4. Remove from eng_next
-rm -rf eng_next/src/app/admin
-rm -rf eng_next/src/components/admin
+npm run dev
 ```
 
-**Время миграции:** ~30 минут
-
-## 📊 Performance
-
-### Optimization
-
-- Server-side pagination
-- Lazy loading for large lists
-- Image optimization (Next.js Image)
-- API response caching (React Query planned)
-- Debounced search inputs
-
-### Bundle Size
-
-Current admin bundle: ~150KB (gzipped)
-
-**Optimization opportunities:**
-- Code splitting per route
-- Dynamic imports for heavy components
-- Tree shaking unused UI components
-
-## 🧪 Testing
-
-### Manual Testing
-
+### Build for Production
 ```bash
-# 1. Start backend
-cd eng_go && task run-all-bg
-
-# 2. Start frontend
-cd eng_next && npm run dev
-
-# 3. Login as admin
-# Navigate to http://localhost:3000/admin/login
-# Email: admin@test.com
-# Password: password123
-
-# 4. Test features
-# - View users list
-# - Edit user
-# - Delete user
-# - Search users
+npm run build
+npm start
 ```
 
-### Automated Testing (Planned)
-
-```typescript
-// tests/admin/users.test.tsx
-describe('Admin Users Page', () => {
-  it('should list all users', async () => {
-    render(<UsersPage />);
-    await waitFor(() => {
-      expect(screen.getByText('admin@test.com')).toBeInTheDocument();
-    });
-  });
-
-  it('should delete user', async () => {
-    // Test delete functionality
-  });
-});
+### Deploy with PM2
+```bash
+pm2 start npm --name "eng_next" -- start
+pm2 restart eng_next
 ```
 
-## 📝 Related Documentation
+## Known Issues
 
-- [ADMIN_PANEL_PLAN.md](./ADMIN_PANEL_PLAN.md) - Implementation plan
-- [API_ENDPOINTS.md](./API_ENDPOINTS.md) - API reference
-- [README.md](./README.md) - Project overview
-- [Backend Admin API](../eng_go/docs/ADMIN_API.md) - Backend documentation
+### Browser Cache
+After code changes, you may need to:
+1. Hard refresh (Ctrl+Shift+R)
+2. Clear browser cache
+3. Or rebuild: `rm -rf .next && npm run build`
 
-## 🤝 Contributing
+### Course List
+Currently shows only 5 published courses instead of all 11. Backend filters by `is_published = true`. Fix pending to show all courses including drafts in admin panel.
 
-When adding new admin features:
+## API Endpoints
 
-1. Add route in `src/app/admin/`
-2. Create components in `src/components/admin/`
-3. Add API methods in `src/lib/admin-api.ts`
-4. Update sidebar navigation
-5. Add to this documentation
-6. Test thoroughly
+See [eng_go/docs/ADMIN_API.md](../../eng_go/docs/ADMIN_API.md) for full API documentation.
 
-## 📞 Support
+### Quick Reference
+- `GET /api/v1/admin/me` - Get admin info
+- `GET /api/v1/admin/users` - List users
+- `GET /api/v1/admin/courses` - List courses
+- `POST /api/v1/admin/courses` - Create course
+- `GET /api/v1/admin/videos` - List videos
+- `POST /api/v1/admin/videos/upload` - Upload video
 
-For issues or questions:
-- GitHub Issues: [eng_next/issues](https://github.com/aziztwelve/eng_next/issues)
-- Backend API: [eng_go/issues](https://github.com/aziztwelve/eng_go/issues)
+## Test Credentials
+- **Admin:** admin@test.com / password123
+- **Instructor:** instructor1@test.com / password123
+- **Student:** student1@test.com / password123
+
+## Future Improvements
+- [ ] Show all courses (including drafts) in admin panel
+- [ ] Add pagination to all list pages
+- [ ] Add advanced filters (date range, status, etc.)
+- [ ] Implement visual quiz builder (instead of JSON textarea)
+- [ ] Add thumbnail upload for courses and videos
+- [ ] Add bulk operations (delete multiple, publish multiple)
+- [ ] Add course preview before publishing
+- [ ] Add analytics dashboard with charts

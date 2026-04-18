@@ -33,11 +33,11 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── admin/             # Admin panel
+│   ├── admin/             # Admin panel (✅ Phase 1-4 complete)
 │   │   ├── login/         # Admin login page
-│   │   ├── users/         # User management
-│   │   ├── courses/       # Course management (coming soon)
-│   │   ├── videos/        # Video management (coming soon)
+│   │   ├── users/         # User management (✅ complete)
+│   │   ├── courses/       # Course management (✅ complete with content editor)
+│   │   ├── videos/        # Video management (✅ complete with upload)
 │   │   └── analytics/     # Analytics (coming soon)
 │   ├── auth/              # User authentication
 │   ├── courses/           # Course catalog
@@ -47,7 +47,13 @@ src/
 ├── components/            # React components
 │   ├── admin/            # Admin-specific components
 │   │   ├── Sidebar.tsx   # Admin navigation
-│   │   └── Header.tsx    # Admin header
+│   │   ├── Header.tsx    # Admin header
+│   │   └── course/       # Course management components
+│   │       ├── ModuleManager.tsx    # Module CRUD
+│   │       ├── LessonManager.tsx    # Lesson CRUD
+│   │       ├── StepManager.tsx      # Step CRUD (text/video/quiz)
+│   │       ├── RichTextEditor.tsx   # Markdown editor
+│   │       └── VideoSelector.tsx    # Video picker modal
 │   ├── ui/               # Reusable UI components
 │   └── ...
 │
