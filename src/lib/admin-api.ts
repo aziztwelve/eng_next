@@ -250,6 +250,54 @@ class AdminAPI {
     }
   }
 
+  // Module management
+  async createModule(courseId: string, data: { title: string; description: string; order_index: number }): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/${courseId}/modules`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create module');
+    }
+
+    return response.json();
+  }
+
+  async updateModule(moduleId: string, data: { title: string; description: string; order_index: number }): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/modules/${moduleId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update module');
+    }
+
+    return response.json();
+  }
+
+  async deleteModule(moduleId: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/modules/${moduleId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete module');
+    }
+  }
+
   // Video management
   async listVideos(): Promise<{ videos: Video[]; total: number }> {
     const response = await fetch(`${API_BASE_URL}/admin/videos`, {

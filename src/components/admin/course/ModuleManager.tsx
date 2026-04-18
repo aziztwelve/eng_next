@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Module } from '@/lib/admin-api';
+import { Module, adminAPI } from '@/lib/admin-api';
 import LessonManager from './LessonManager';
 
 interface ModuleManagerProps {
@@ -23,10 +23,12 @@ export default function ModuleManager({ courseId, modules, onUpdate }: ModuleMan
 
     setSaving(true);
     try {
-      // TODO: Call API to create module
-      console.log('Creating module:', { courseId, title, description });
+      await adminAPI.createModule(courseId, {
+        title,
+        description,
+        order_index: modules.length,
+      });
       
-      // Mock success
       setShowAddForm(false);
       setTitle('');
       setDescription('');
@@ -49,10 +51,12 @@ export default function ModuleManager({ courseId, modules, onUpdate }: ModuleMan
 
     setSaving(true);
     try {
-      // TODO: Call API to update module
-      console.log('Updating module:', { id: editingModule.id, title, description });
+      await adminAPI.updateModule(editingModule.id, {
+        title,
+        description,
+        order_index: editingModule.order_index,
+      });
       
-      // Mock success
       setEditingModule(null);
       setTitle('');
       setDescription('');
@@ -68,10 +72,7 @@ export default function ModuleManager({ courseId, modules, onUpdate }: ModuleMan
     if (!confirm('Are you sure you want to delete this module?')) return;
 
     try {
-      // TODO: Call API to delete module
-      console.log('Deleting module:', moduleId);
-      
-      // Mock success
+      await adminAPI.deleteModule(moduleId);
       onUpdate();
     } catch (err) {
       alert('Failed to delete module');
