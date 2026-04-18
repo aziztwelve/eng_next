@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { adminAPI, User } from '@/lib/admin-api';
 
-export default function EditUserPage({ params }: { params: { id: string } }) {
+export default function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const { id } = use(params);
   const [user, setUser] = useState<User | null>(null);
   const [fullName, setFullName] = useState('');
   const [role, setRole] = useState('student');
@@ -17,12 +18,12 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     loadUser();
-  }, [params.id]);
+  }, [id]);
 
   const loadUser = async () => {
     try {
       setLoading(true);
-      const data = await adminAPI.getUser(params.id);
+      const data = await adminAPI.getUser(id);
       setUser(data);
       setFullName(data.full_name);
       setRole(data.role);
@@ -40,7 +41,7 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
     setError('');
 
     try {
-      await adminAPI.updateUser(params.id, {
+      await adminAPI.updateUser(id, {
         full_name: fullName,
         role: role,
       });

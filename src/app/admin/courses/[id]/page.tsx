@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { adminAPI, CourseDetail } from '@/lib/admin-api';
 import ModuleManager from '@/components/admin/course/ModuleManager';
 
-export default function EditCoursePage({ params }: { params: { id: string } }) {
+export default function EditCoursePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const { id } = use(params);
   const [course, setCourse] = useState<CourseDetail | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -21,12 +22,12 @@ export default function EditCoursePage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     loadCourse();
-  }, [params.id]);
+  }, [id]);
 
   const loadCourse = async () => {
     try {
       setLoading(true);
-      const data = await adminAPI.getCourse(params.id);
+      const data = await adminAPI.getCourse(id);
       setCourse(data);
       setTitle(data.title);
       setDescription(data.description);
@@ -46,7 +47,7 @@ export default function EditCoursePage({ params }: { params: { id: string } }) {
     setError('');
 
     try {
-      await adminAPI.updateCourse(params.id, {
+      await adminAPI.updateCourse(id, {
         title,
         description,
         level,
@@ -220,7 +221,7 @@ export default function EditCoursePage({ params }: { params: { id: string } }) {
           </CardHeader>
           <CardContent>
             <ModuleManager
-              courseId={params.id}
+              courseId={id}
               modules={course.modules || []}
               onUpdate={loadCourse}
             />
