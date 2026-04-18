@@ -1,37 +1,23 @@
-import { useRouteError, isRouteErrorResponse } from 'react-router';
+'use client';
+
 import { useEffect } from 'react';
 import { errorReporter } from '@/lib/errorReporter';
 import { ErrorFallback } from '@/components/error/fallback';
 
-export function RouteErrorBoundary() {
-  const error = useRouteError();
+interface RouteErrorBoundaryProps {
+  error: Error | { digest?: string; message?: string };
+  reset?: () => void;
+}
 
+export function RouteErrorBoundary({ error, reset }: RouteErrorBoundaryProps) {
   useEffect(() => {
     if (!error) return;
 
-    let message = 'Unknown route error';
-    let stack = '';
-
-    if (isRouteErrorResponse(error)) {
-      message = `Route Error ${error.status}: ${error.statusText}`;
-    } else if (error instanceof Error) {
-      message = error.message;
-      stack = error.stack || '';
-    } else if (typeof error === 'string') {
-      message = error;
-    }
+    const message = error instanceof Error ? error.message : error.message || 'Unknown route error';
+    const stack = error instanceof Error ? error.stack || '' : '';
 
     errorReporter.reportRouteError(message, stack);
   }, [error]);
-
-  if (isRouteErrorResponse(error)) {
-    return (
-      <ErrorFallback
-        title={`${error.status} ${error.statusText}`}
-        error={error.data ? { message: JSON.stringify(error.data, null, 2) } : undefined}
-      />
-    );
-  }
 
   return <ErrorFallback error={error instanceof Error ? error : undefined} />;
 }
