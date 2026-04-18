@@ -20,6 +20,8 @@ export default function NewCoursePage() {
     setSaving(true);
     setError('');
 
+    console.log('Creating course with level:', level); // Debug
+
     try {
       const course = await adminAPI.createCourse({
         title,
