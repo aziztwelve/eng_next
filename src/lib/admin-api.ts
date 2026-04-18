@@ -66,6 +66,30 @@ export interface UpdateCourseData {
   language: string;
 }
 
+export interface Video {
+  id: string;
+  title: string;
+  description: string;
+  storage_key: string;
+  bucket_name: string;
+  content_type: string;
+  size_bytes: number;
+  duration_seconds: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UploadVideoData {
+  title: string;
+  description: string;
+}
+
+export interface UpdateVideoData {
+  title: string;
+  description: string;
+}
+
 class AdminAPI {
   private getAuthHeader(): string {
     // Get token from cookie
@@ -222,6 +246,96 @@ class AdminAPI {
     if (!response.ok) {
       throw new Error('Failed to publish course');
     }
+  }
+
+  // Video management
+  async listVideos(): Promise<{ videos: Video[]; total: number }> {
+    const response = await fetch(`${API_BASE_URL}/admin/videos`, {
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch videos');
+    }
+
+    return response.json();
+  }
+
+  async getVideo(id: string): Promise<Video> {
+    const response = await fetch(`${API_BASE_URL}/admin/videos/${id}`, {
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch video');
+    }
+
+    return response.json();
+  }
+
+  async uploadVideo(data: UploadVideoData): Promise<Video> {
+    const response = await fetch(`${API_BASE_URL}/admin/videos/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to upload video');
+    }
+
+    return response.json();
+  }
+
+  async updateVideo(id: string, data: UpdateVideoData): Promise<Video> {
+    const response = await fetch(`${API_BASE_URL}/admin/videos/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update video');
+    }
+
+    return response.json();
+  }
+
+  async deleteVideo(id: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/videos/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete video');
+    }
+  }
+
+  async getVideoUsage(id: string): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/videos/${id}/usage`, {
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch video usage');
+    }
+
+    return response.json();
   }
 }
 
