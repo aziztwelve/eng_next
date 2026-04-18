@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { adminAPI, CourseDetail } from '@/lib/admin-api';
+import ModuleManager from '@/components/admin/course/ModuleManager';
 
 export default function EditCoursePage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -213,49 +214,18 @@ export default function EditCoursePage({ params }: { params: { id: string } }) {
       )}
 
       {activeTab === 'content' && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Modules & Lessons</CardTitle>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                  + Add Module
-                </button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {course.modules && course.modules.length > 0 ? (
-                <div className="space-y-4">
-                  {course.modules.map((module, index) => (
-                    <div key={module.id} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-medium">{index + 1}. {module.title}</h3>
-                          <p className="text-sm text-gray-500">{module.description}</p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {module.lessons?.length || 0} lessons
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <button className="text-blue-600 hover:text-blue-800 text-sm">
-                            Edit
-                          </button>
-                          <button className="text-red-600 hover:text-red-800 text-sm">
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  No modules yet. Click "Add Module" to get started.
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Modules & Lessons</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ModuleManager
+              courseId={params.id}
+              modules={course.modules || []}
+              onUpdate={loadCourse}
+            />
+          </CardContent>
+        </Card>
       )}
     </div>
   );
