@@ -6,15 +6,19 @@ export function middleware(request: NextRequest) {
 
   // Check if accessing admin routes
   if (pathname.startsWith('/admin')) {
+    // Skip middleware for login page
+    if (pathname === '/admin/login') {
+      return NextResponse.next();
+    }
+
     // TODO: Implement proper auth check
     // For now, check if user has admin token in cookies
     const token = request.cookies.get('auth_token')?.value;
     const userRole = request.cookies.get('user_role')?.value;
 
-    // If no token or not admin, redirect to login
+    // If no token or not admin, redirect to admin login
     if (!token || userRole !== 'admin') {
-      const loginUrl = new URL('/auth/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
+      const loginUrl = new URL('/admin/login', request.url);
       return NextResponse.redirect(loginUrl);
     }
   }
