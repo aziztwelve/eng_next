@@ -114,7 +114,7 @@ export default function LessonManager({ moduleId, lessons, onUpdate }: LessonMan
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Lesson title"
                 disabled={saving}
-                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               />
             </div>
             <div>
@@ -127,7 +127,7 @@ export default function LessonManager({ moduleId, lessons, onUpdate }: LessonMan
                 placeholder="Lesson description"
                 disabled={saving}
                 rows={2}
-                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               />
             </div>
             <div className="flex items-center space-x-2">

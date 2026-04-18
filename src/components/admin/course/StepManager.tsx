@@ -132,7 +132,7 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
                 value={stepType}
                 onChange={(e) => setStepType(e.target.value as StepType)}
                 disabled={saving}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
               >
                 <option value="text">Text Content</option>
                 <option value="video">Video</option>
@@ -150,7 +150,7 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Step title"
                 disabled={saving}
-                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
               />
             </div>
 

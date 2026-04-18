@@ -118,7 +118,7 @@ export default function ModuleManager({ courseId, modules, onUpdate }: ModuleMan
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Module title"
                 disabled={saving}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               />
             </div>
             <div>
@@ -131,7 +131,7 @@ export default function ModuleManager({ courseId, modules, onUpdate }: ModuleMan
                 placeholder="Module description"
                 disabled={saving}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               />
             </div>
             <div className="flex items-center space-x-2">
