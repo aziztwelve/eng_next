@@ -1,36 +1,269 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-Learning Platform - Frontend
 
-## Getting Started
+Next.js frontend application for the E-Learning platform.
 
-First, run the development server:
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- Backend API running on `http://localhost:8080`
+
+### Installation
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── admin/             # Admin panel
+│   │   ├── login/         # Admin login page
+│   │   ├── users/         # User management
+│   │   ├── courses/       # Course management (coming soon)
+│   │   ├── videos/        # Video management (coming soon)
+│   │   └── analytics/     # Analytics (coming soon)
+│   ├── auth/              # User authentication
+│   ├── courses/           # Course catalog
+│   ├── dashboard/         # User dashboard
+│   └── learn/             # Learning interface
+│
+├── components/            # React components
+│   ├── admin/            # Admin-specific components
+│   │   ├── Sidebar.tsx   # Admin navigation
+│   │   └── Header.tsx    # Admin header
+│   ├── ui/               # Reusable UI components
+│   └── ...
+│
+├── lib/                   # Utilities and helpers
+│   ├── admin-api.ts      # Admin API client
+│   ├── api-client.ts     # General API client
+│   └── utils.ts          # Helper functions
+│
+└── types/                 # TypeScript types
+    └── api.ts            # API response types
+```
 
-## Learn More
+## 🎨 Features
 
-To learn more about Next.js, take a look at the following resources:
+### User Features
+- ✅ Course catalog browsing
+- ✅ User authentication (login/register)
+- ✅ User dashboard
+- ✅ Course enrollment
+- ✅ Learning interface
+- 🚧 Progress tracking
+- 🚧 Video playback
+- 🚧 Quiz completion
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Admin Features
+- ✅ Admin authentication (separate login)
+- ✅ Role-based access control
+- ✅ User management (list, view, edit, delete)
+- 🚧 Course management
+- 🚧 Video management
+- 🚧 Analytics dashboard
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔐 Admin Panel
 
-## Deploy on Vercel
+### Access
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Admin panel is available at: `http://localhost:3000/admin`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Test Credentials:**
+```
+Email: admin@test.com
+Password: password123
+```
+
+### Features
+
+#### User Management (`/admin/users`)
+- View all users with search and filtering
+- Edit user details (name, role)
+- Change user roles (student → instructor → admin)
+- Delete users
+
+#### Dashboard (`/admin`)
+- Overview statistics
+- Recent activity
+- Quick actions
+
+### Security
+
+Admin routes are protected by:
+1. **Middleware** - checks for valid auth token
+2. **Role validation** - verifies `admin` role in JWT token
+3. **Separate login** - admin login at `/admin/login`
+
+## 🔌 API Integration
+
+### Backend API
+
+Base URL: `http://localhost:8080/api/v1`
+
+### Admin API Client
+
+```typescript
+// lib/admin-api.ts
+import { adminAPI } from '@/lib/admin-api';
+
+// List users
+const { users, total } = await adminAPI.listUsers();
+
+// Get user
+const user = await adminAPI.getUser(userId);
+
+// Update user
+const updated = await adminAPI.updateUser(userId, {
+  full_name: 'New Name',
+  role: 'instructor'
+});
+
+// Delete user
+await adminAPI.deleteUser(userId);
+```
+
+### Authentication Flow
+
+#### User Auth
+1. User logs in at `/auth/login`
+2. Backend returns JWT token
+3. Token stored in cookies
+4. Used for protected routes
+
+#### Admin Auth
+1. Admin logs in at `/admin/login`
+2. Backend returns JWT token with `role: "admin"`
+3. Frontend validates admin role
+4. Token stored in cookies
+5. Middleware checks token + role on `/admin/*` routes
+
+## 🎨 UI Components
+
+### Shadcn/ui
+
+Project uses [shadcn/ui](https://ui.shadcn.com/) components:
+
+- Card
+- Input
+- Button
+- Select
+- Dropdown Menu
+- Accordion
+- Checkbox
+
+### Custom Components
+
+- `AdminSidebar` - Admin navigation with icons
+- `AdminHeader` - Admin header with user info
+- `ErrorBoundary` - Error handling
+- `Layout` - Page layouts
+
+## 🛠️ Development
+
+### Environment Variables
+
+Create `.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+```
+
+### Code Style
+
+- TypeScript strict mode
+- ESLint configuration
+- Prettier formatting
+
+### Building
+
+```bash
+# Development build
+npm run dev
+
+# Production build
+npm run build
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+```
+
+## 📝 Documentation
+
+- [ADMIN_PANEL_PLAN.md](./ADMIN_PANEL_PLAN.md) - Admin panel implementation plan
+- [API_ENDPOINTS.md](./API_ENDPOINTS.md) - API endpoints reference
+- [API_INTEGRATION.md](./API_INTEGRATION.md) - API integration guide
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+```
+
+### Docker
+
+```bash
+# Build image
+docker build -t eng-next .
+
+# Run container
+docker run -p 3000:3000 eng-next
+```
+
+### Environment Variables for Production
+
+```env
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com/api/v1
+```
+
+## 🔗 Related Projects
+
+- [eng_go](../eng_go) - Backend API (Go microservices)
+- [GitHub Repository](https://github.com/aziztwelve/eng_next)
+
+## 📊 Tech Stack
+
+- **Framework:** Next.js 14+ (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **UI Components:** Shadcn/ui
+- **State Management:** React Context / Hooks
+- **API Client:** Fetch API
+- **Authentication:** JWT (cookies)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## 📄 License
+
+MIT License - see LICENSE file for details
