@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { Step } from '@/lib/admin-api';
+import VideoSelector from './VideoSelector';
+import RichTextEditor from './RichTextEditor';
 
 interface StepManagerProps {
   lessonId: string;
@@ -18,6 +20,7 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [videoId, setVideoId] = useState('');
+  const [showVideoSelector, setShowVideoSelector] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const handleAdd = async () => {
@@ -156,39 +159,38 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Content *
                 </label>
-                <textarea
+                <RichTextEditor
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="Step content (supports markdown)"
+                  onChange={setContent}
                   disabled={saving}
-                  rows={4}
-                  className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono"
+                  placeholder="Write your lesson content here..."
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Supports markdown: **bold**, *italic*, `code`, etc.
-                </p>
               </div>
             )}
 
             {stepType === 'video' && (
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Video ID *
+                  Video *
                 </label>
-                <input
-                  type="text"
-                  value={videoId}
-                  onChange={(e) => setVideoId(e.target.value)}
-                  placeholder="Select video..."
-                  disabled={saving}
-                  className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-                <button
-                  type="button"
-                  className="mt-1 text-xs text-blue-600 hover:text-blue-800"
-                >
-                  Browse Videos
-                </button>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={videoId}
+                    onChange={(e) => setVideoId(e.target.value)}
+                    placeholder="Video ID"
+                    disabled={saving}
+                    readOnly
+                    className="flex-1 px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowVideoSelector(true)}
+                    className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  >
+                    Browse
+                  </button>
+                </div>
               </div>
             )}
 
@@ -277,6 +279,18 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
         <div className="text-center py-3 text-xs text-gray-500">
           No steps yet. Click "Add Step" to get started.
         </div>
+      )}
+
+      {/* Video Selector Modal */}
+      {showVideoSelector && (
+        <VideoSelector
+          selectedVideoId={videoId}
+          onSelect={(id) => {
+            setVideoId(id);
+            setShowVideoSelector(false);
+          }}
+          onClose={() => setShowVideoSelector(false)}
+        />
       )}
     </div>
   );

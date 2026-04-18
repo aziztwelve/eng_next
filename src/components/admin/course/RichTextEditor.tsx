@@ -1,0 +1,155 @@
+'use client';
+
+import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+
+interface RichTextEditorProps {
+  value: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+  placeholder?: string;
+}
+
+export default function RichTextEditor({ value, onChange, disabled, placeholder }: RichTextEditorProps) {
+  const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
+
+  const insertMarkdown = (before: string, after: string = '') => {
+    const textarea = document.getElementById('markdown-editor') as HTMLTextAreaElement;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = value.substring(start, end);
+    const newText = value.substring(0, start) + before + selectedText + after + value.substring(end);
+    
+    onChange(newText);
+    
+    // Restore focus and selection
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + before.length, end + before.length);
+    }, 0);
+  };
+
+  return (
+    <div className="border border-gray-300 rounded-lg overflow-hidden">
+      {/* Toolbar */}
+      <div className="bg-gray-50 border-b border-gray-300 p-2 flex items-center space-x-1">
+        <button
+          type="button"
+          onClick={() => insertMarkdown('**', '**')}
+          disabled={disabled}
+          className="px-2 py-1 text-xs font-bold border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          title="Bold"
+        >
+          B
+        </button>
+        <button
+          type="button"
+          onClick={() => insertMarkdown('*', '*')}
+          disabled={disabled}
+          className="px-2 py-1 text-xs italic border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          title="Italic"
+        >
+          I
+        </button>
+        <button
+          type="button"
+          onClick={() => insertMarkdown('`', '`')}
+          disabled={disabled}
+          className="px-2 py-1 text-xs font-mono border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          title="Code"
+        >
+          {'<>'}
+        </button>
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+        <button
+          type="button"
+          onClick={() => insertMarkdown('# ')}
+          disabled={disabled}
+          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          title="Heading"
+        >
+          H1
+        </button>
+        <button
+          type="button"
+          onClick={() => insertMarkdown('## ')}
+          disabled={disabled}
+          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          title="Heading 2"
+        >
+          H2
+        </button>
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+        <button
+          type="button"
+          onClick={() => insertMarkdown('- ')}
+          disabled={disabled}
+          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          title="List"
+        >
+          • List
+        </button>
+        <button
+          type="button"
+          onClick={() => insertMarkdown('[', '](url)')}
+          disabled={disabled}
+          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          title="Link"
+        >
+          🔗
+        </button>
+        <div className="flex-1" />
+        <div className="flex border border-gray-300 rounded overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setActiveTab('edit')}
+            className={`px-3 py-1 text-xs ${
+              activeTab === 'edit' ? 'bg-white' : 'bg-gray-100 hover:bg-gray-200'
+            }`}
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('preview')}
+            className={`px-3 py-1 text-xs ${
+              activeTab === 'preview' ? 'bg-white' : 'bg-gray-100 hover:bg-gray-200'
+            }`}
+          >
+            Preview
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="bg-white">
+        {activeTab === 'edit' ? (
+          <textarea
+            id="markdown-editor"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            disabled={disabled}
+            rows={8}
+            className="w-full px-3 py-2 text-sm font-mono focus:outline-none resize-none"
+          />
+        ) : (
+          <div className="px-3 py-2 min-h-[200px] prose prose-sm max-w-none">
+            {value ? (
+              <ReactMarkdown>{value}</ReactMarkdown>
+            ) : (
+              <p className="text-gray-400 italic">Nothing to preview</p>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Help */}
+      <div className="bg-gray-50 border-t border-gray-300 px-3 py-2 text-xs text-gray-500">
+        Markdown supported: **bold**, *italic*, `code`, # heading, - list, [link](url)
+      </div>
+    </div>
+  );
+}
