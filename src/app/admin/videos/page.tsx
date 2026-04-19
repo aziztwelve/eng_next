@@ -4,29 +4,43 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { adminAPI, Video } from '@/lib/admin-api';
+import { Button } from '@/components/ui/button';
+import { adminAPI, Video, PaginationMeta } from '@/lib/admin-api';
 
 export default function VideosPage() {
   const [videos, setVideos] = useState<Video[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>({ total: 0, page: 1, limit: 10, total_pages: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
   const [error, setError] = useState('');
 
   useEffect(() => {
     loadVideos();
-  }, []);
+  }, [pagination.page, statusFilter]);
 
   const loadVideos = async () => {
     try {
       setLoading(true);
-      const data = await adminAPI.listVideos();
+      const data = await adminAPI.listVideos({
+        page: pagination.page,
+        limit: pagination.limit,
+        search: search || undefined,
+        status: statusFilter || undefined,
+      });
       setVideos(data.videos);
+      setPagination(data.pagination);
     } catch (err) {
       setError('Failed to load videos');
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = () => {
+    setPagination(prev => ({ ...prev, page: 1 }));
+    loadVideos();
   };
 
   const handleDelete = async (videoId: string) => {
@@ -36,18 +50,16 @@ export default function VideosPage() {
 
     try {
       await adminAPI.deleteVideo(videoId);
-      setVideos(videos.filter(v => v.id !== videoId));
+      loadVideos(); // Reload to get fresh data
     } catch (err) {
       alert('Failed to delete video');
       console.error(err);
     }
   };
 
-  const filteredVideos = videos.filter(
-    (video) =>
-      video.title.toLowerCase().includes(search.toLowerCase()) ||
-      video.description.toLowerCase().includes(search.toLowerCase())
-  );
+  const handlePageChange = (newPage: number) => {
+    setPagination(prev => ({ ...prev, page: newPage }));
+  };
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 B';
@@ -105,15 +117,31 @@ export default function VideosPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>All Videos ({videos.length})</CardTitle>
-            <Input
-              type="search"
-              placeholder="Search videos..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="max-w-xs"
-            />
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <CardTitle>All Videos ({pagination.total})</CardTitle>
+            </div>
+            <div className="flex gap-4">
+              <Input
+                type="search"
+                placeholder="Search videos..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                className="max-w-xs"
+              />
+              <Button onClick={handleSearch} variant="outline">Search</Button>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 border rounded-lg"
+              >
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="processing">Processing</option>
+                <option value="deleted">Deleted</option>
+              </select>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -130,7 +158,7 @@ export default function VideosPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredVideos.map((video) => (
+                {videos.map((video) => (
                   <tr key={video.id} className="border-b hover:bg-gray-50">
                     <td className="py-3 px-4">
                       <div>
@@ -171,12 +199,52 @@ export default function VideosPage() {
               </tbody>
             </table>
 
-            {filteredVideos.length === 0 && (
+            {videos.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 No videos found matching your search.
               </div>
             )}
           </div>
+
+          {/* Pagination */}
+          {pagination.total_pages > 1 && (
+            <div className="flex items-center justify-between mt-6 pt-4 border-t">
+              <div className="text-sm text-gray-600">
+                Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} videos
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                  disabled={pagination.page === 1}
+                  variant="outline"
+                  size="sm"
+                >
+                  Previous
+                </Button>
+                <div className="flex gap-1">
+                  {Array.from({ length: pagination.total_pages }, (_, i) => i + 1).map(page => (
+                    <Button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      variant={page === pagination.page ? "default" : "outline"}
+                      size="sm"
+                      className="min-w-[40px]"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                  disabled={pagination.page === pagination.total_pages}
+                  variant="outline"
+                  size="sm"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

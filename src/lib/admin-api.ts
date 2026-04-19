@@ -432,8 +432,15 @@ class AdminAPI {
   }
 
   // Video management
-  async listVideos(): Promise<{ videos: Video[]; total: number }> {
-    const response = await fetch(`${API_BASE_URL}/admin/videos`, {
+  async listVideos(params?: PaginationParams): Promise<{ videos: Video[]; pagination: PaginationMeta }> {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.status) queryParams.append('status', params.status);
+
+    const url = `${API_BASE_URL}/admin/videos${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+    const response = await fetch(url, {
       headers: {
         'Authorization': this.getAuthHeader(),
       },
