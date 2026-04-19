@@ -30,7 +30,9 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
     try {
       // Prepare content based on step type
       let stepContent = content;
-      if (stepType === 'video') {
+      if (stepType === 'text') {
+        stepContent = JSON.stringify({ text: content });
+      } else if (stepType === 'video') {
         stepContent = JSON.stringify({ video_id: videoId });
       } else if (stepType === 'quiz') {
         // Content is already JSON string from textarea
@@ -58,8 +60,22 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
     setEditingStep(step);
     setStepType(step.type as StepType);
     setTitle(step.title);
-    setContent(step.content || '');
-    setVideoId(step.video_id || '');
+    
+    // Parse content based on type
+    try {
+      const parsed = JSON.parse(step.content || '{}');
+      if (step.type === 'text') {
+        setContent(parsed.text || '');
+      } else if (step.type === 'video') {
+        setVideoId(parsed.video_id || '');
+        setContent('');
+      } else if (step.type === 'quiz') {
+        setContent(step.content || '');
+      }
+    } catch (e) {
+      // Fallback for non-JSON content
+      setContent(step.content || '');
+    }
   };
 
   const handleUpdate = async () => {
@@ -69,7 +85,9 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
     try {
       // Prepare content based on step type
       let stepContent = content;
-      if (stepType === 'video') {
+      if (stepType === 'text') {
+        stepContent = JSON.stringify({ text: content });
+      } else if (stepType === 'video') {
         stepContent = JSON.stringify({ video_id: videoId });
       } else if (stepType === 'quiz') {
         stepContent = content;
