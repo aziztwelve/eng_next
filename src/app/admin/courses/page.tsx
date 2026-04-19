@@ -4,29 +4,43 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { adminAPI, Course } from '@/lib/admin-api';
+import { Button } from '@/components/ui/button';
+import { adminAPI, Course, PaginationMeta } from '@/lib/admin-api';
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>({ total: 0, page: 1, limit: 10, total_pages: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
   const [error, setError] = useState('');
 
   useEffect(() => {
     loadCourses();
-  }, []);
+  }, [pagination.page, statusFilter]);
 
   const loadCourses = async () => {
     try {
       setLoading(true);
-      const data = await adminAPI.listCourses();
+      const data = await adminAPI.listCourses({
+        page: pagination.page,
+        limit: pagination.limit,
+        search: search || undefined,
+        status: statusFilter || undefined,
+      });
       setCourses(data.courses);
+      setPagination(data.pagination);
     } catch (err) {
       setError('Failed to load courses');
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = () => {
+    setPagination(prev => ({ ...prev, page: 1 }));
+    loadCourses();
   };
 
   const handleDelete = async (courseId: string) => {
@@ -48,22 +62,16 @@ export default function CoursesPage() {
     
     try {
       await adminAPI.publishCourse(courseId, publish);
-      setCourses(courses.map(c => 
-        c.id === courseId 
-          ? { ...c, status: publish ? 'published' : 'draft' }
-          : c
-      ));
+      loadCourses(); // Reload to get fresh data
     } catch (err) {
       alert('Failed to update course status');
       console.error(err);
     }
   };
 
-  const filteredCourses = courses.filter(
-    (course) =>
-      course.title.toLowerCase().includes(search.toLowerCase()) ||
-      course.description.toLowerCase().includes(search.toLowerCase())
-  );
+  const handlePageChange = (newPage: number) => {
+    setPagination(prev => ({ ...prev, page: newPage }));
+  };
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
@@ -118,15 +126,30 @@ export default function CoursesPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>All Courses ({courses.length})</CardTitle>
-            <Input
-              type="search"
-              placeholder="Search courses..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="max-w-xs"
-            />
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <CardTitle>All Courses ({pagination.total})</CardTitle>
+            </div>
+            <div className="flex gap-4">
+              <Input
+                type="search"
+                placeholder="Search courses..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                className="max-w-xs"
+              />
+              <Button onClick={handleSearch} variant="outline">Search</Button>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 border rounded-lg"
+              >
+                <option value="">All Status</option>
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+              </select>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -143,7 +166,7 @@ export default function CoursesPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredCourses.map((course) => (
+                {courses.map((course) => (
                   <tr key={course.id} className="border-b hover:bg-gray-50">
                     <td className="py-3 px-4">
                       <div>
@@ -198,12 +221,52 @@ export default function CoursesPage() {
               </tbody>
             </table>
 
-            {filteredCourses.length === 0 && (
+            {courses.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 No courses found matching your search.
               </div>
             )}
           </div>
+
+          {/* Pagination */}
+          {pagination.total_pages > 1 && (
+            <div className="flex items-center justify-between mt-6 pt-4 border-t">
+              <div className="text-sm text-gray-600">
+                Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} courses
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                  disabled={pagination.page === 1}
+                  variant="outline"
+                  size="sm"
+                >
+                  Previous
+                </Button>
+                <div className="flex gap-1">
+                  {Array.from({ length: pagination.total_pages }, (_, i) => i + 1).map(page => (
+                    <Button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      variant={page === pagination.page ? "default" : "outline"}
+                      size="sm"
+                      className="min-w-[40px]"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                  disabled={pagination.page === pagination.total_pages}
+                  variant="outline"
+                  size="sm"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

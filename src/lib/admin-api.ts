@@ -1,5 +1,19 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+}
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -168,8 +182,15 @@ class AdminAPI {
   }
 
   // Course management
-  async listCourses(): Promise<{ courses: Course[]; total: number }> {
-    const response = await fetch(`${API_BASE_URL}/admin/courses`, {
+  async listCourses(params?: PaginationParams): Promise<{ courses: Course[]; pagination: PaginationMeta }> {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.status) queryParams.append('status', params.status);
+
+    const url = `${API_BASE_URL}/admin/courses${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+    const response = await fetch(url, {
       headers: {
         'Authorization': this.getAuthHeader(),
       },
