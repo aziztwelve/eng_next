@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Step } from '@/lib/admin-api';
+import { Step, adminAPI } from '@/lib/admin-api';
 import VideoSelector from './VideoSelector';
 import RichTextEditor from './RichTextEditor';
 
@@ -28,8 +28,21 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
 
     setSaving(true);
     try {
-      // TODO: Call API to create step
-      console.log('Creating step:', { lessonId, stepType, title, content, videoId });
+      // Prepare content based on step type
+      let stepContent = content;
+      if (stepType === 'video') {
+        stepContent = JSON.stringify({ video_id: videoId });
+      } else if (stepType === 'quiz') {
+        // Content is already JSON string from textarea
+        stepContent = content;
+      }
+
+      await adminAPI.createStep(lessonId, {
+        type: stepType,
+        title,
+        content: stepContent,
+        order_index: steps.length,
+      });
       
       setShowAddForm(false);
       resetForm();
@@ -54,8 +67,20 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
 
     setSaving(true);
     try {
-      // TODO: Call API to update step
-      console.log('Updating step:', { id: editingStep.id, stepType, title, content, videoId });
+      // Prepare content based on step type
+      let stepContent = content;
+      if (stepType === 'video') {
+        stepContent = JSON.stringify({ video_id: videoId });
+      } else if (stepType === 'quiz') {
+        stepContent = content;
+      }
+
+      await adminAPI.updateStep(editingStep.id, {
+        type: stepType,
+        title,
+        content: stepContent,
+        order_index: editingStep.order_index,
+      });
       
       setEditingStep(null);
       resetForm();
@@ -71,8 +96,7 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
     if (!confirm('Are you sure you want to delete this step?')) return;
 
     try {
-      // TODO: Call API to delete step
-      console.log('Deleting step:', stepId);
+      await adminAPI.deleteStep(stepId);
       onUpdate();
     } catch (err) {
       alert('Failed to delete step');

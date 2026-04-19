@@ -346,6 +346,54 @@ class AdminAPI {
     }
   }
 
+  // Step management
+  async createStep(lessonId: string, data: { type: string; title: string; content: string; order_index: number }): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/lessons/${lessonId}/steps`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create step');
+    }
+
+    return response.json();
+  }
+
+  async updateStep(stepId: string, data: { type: string; title: string; content: string; order_index: number }): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/steps/${stepId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update step');
+    }
+
+    return response.json();
+  }
+
+  async deleteStep(stepId: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/courses/steps/${stepId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete step');
+    }
+  }
+
   // Video management
   async listVideos(): Promise<{ videos: Video[]; total: number }> {
     const response = await fetch(`${API_BASE_URL}/admin/videos`, {
