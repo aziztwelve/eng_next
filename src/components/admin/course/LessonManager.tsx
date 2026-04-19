@@ -26,7 +26,7 @@ export default function LessonManager({ moduleId, lessons, onUpdate }: LessonMan
       await adminAPI.createLesson(moduleId, {
         title,
         description,
-        order_index: lessons.length,
+        order_index: lessons.length + 1,
       });
       
       setShowAddForm(false);

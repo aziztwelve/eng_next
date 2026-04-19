@@ -43,7 +43,7 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
         type: stepType,
         title,
         content: stepContent,
-        order_index: steps.length,
+        order_index: steps.length + 1,
       });
       
       setShowAddForm(false);

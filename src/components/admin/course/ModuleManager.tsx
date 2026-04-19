@@ -26,7 +26,7 @@ export default function ModuleManager({ courseId, modules, onUpdate }: ModuleMan
       await adminAPI.createModule(courseId, {
         title,
         description,
-        order_index: modules.length,
+        order_index: modules.length + 1,
       });
       
       setShowAddForm(false);
