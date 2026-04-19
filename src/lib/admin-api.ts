@@ -541,6 +541,133 @@ class AdminAPI {
 
     return response.json();
   }
+
+  // Quiz Management
+  async listQuizzes(params?: PaginationParams): Promise<{ quizzes: any[] }> {
+    const queryParams = new URLSearchParams();
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.page) queryParams.append('offset', ((params.page - 1) * (params.limit || 10)).toString());
+
+    const response = await fetch(`${API_BASE_URL}/admin/quizzes?${queryParams}`, {
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch quizzes');
+    }
+
+    return response.json();
+  }
+
+  async getQuiz(id: string): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/quizzes/${id}`, {
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch quiz');
+    }
+
+    return response.json();
+  }
+
+  async createQuiz(data: any): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/quizzes`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create quiz');
+    }
+
+    return response.json();
+  }
+
+  async updateQuiz(id: string, data: any): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/quizzes/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update quiz');
+    }
+
+    return response.json();
+  }
+
+  async deleteQuiz(id: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/quizzes/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete quiz');
+    }
+  }
+
+  async addQuestion(quizId: string, data: any): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/quizzes/${quizId}/questions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add question');
+    }
+
+    return response.json();
+  }
+
+  async updateQuestion(questionId: string, data: any): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/admin/questions/${questionId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update question');
+    }
+
+    return response.json();
+  }
+
+  async deleteQuestion(questionId: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/questions/${questionId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete question');
+    }
+  }
 }
 
 export const adminAPI = new AdminAPI();
