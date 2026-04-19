@@ -82,6 +82,14 @@ export interface Video {
   updated_at: string;
 }
 
+export interface DashboardStats {
+  total_users: number;
+  total_courses: number;
+  published_courses: number;
+  draft_courses: number;
+  total_videos: number;
+}
+
 export interface UploadVideoData {
   title: string;
   description: string;
@@ -479,6 +487,20 @@ class AdminAPI {
 
     if (!response.ok) {
       throw new Error('Failed to fetch video usage');
+    }
+
+    return response.json();
+  }
+
+  async getStats(): Promise<DashboardStats> {
+    const response = await fetch(`${API_BASE_URL}/admin/stats`, {
+      headers: {
+        'Authorization': this.getAuthHeader(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch dashboard stats');
     }
 
     return response.json();

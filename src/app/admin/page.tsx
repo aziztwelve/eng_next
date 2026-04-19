@@ -2,39 +2,42 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-interface DashboardStats {
-  totalUsers: number;
-  totalCourses: number;
-  totalEnrollments: number;
-  activeStudents: number;
-}
+import { adminAPI, DashboardStats } from '@/lib/admin-api';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
-    totalUsers: 0,
-    totalCourses: 0,
-    totalEnrollments: 0,
-    activeStudents: 0,
+    total_users: 0,
+    total_courses: 0,
+    published_courses: 0,
+    draft_courses: 0,
+    total_videos: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // TODO: Fetch from API
-    // Mock data for now
-    setTimeout(() => {
-      setStats({
-        totalUsers: 156,
-        totalCourses: 12,
-        totalEnrollments: 342,
-        activeStudents: 89,
-      });
-      setLoading(false);
-    }, 500);
+    loadStats();
   }, []);
+
+  const loadStats = async () => {
+    try {
+      setLoading(true);
+      const data = await adminAPI.getStats();
+      setStats(data);
+    } catch (err) {
+      setError('Failed to load dashboard stats');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return <div className="flex items-center justify-center h-full">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="flex items-center justify-center h-full text-red-500">{error}</div>;
   }
 
   return (
@@ -65,8 +68,8 @@ export default function AdminDashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers}</div>
-            <p className="text-xs text-gray-500 mt-1">+12% from last month</p>
+            <div className="text-2xl font-bold">{stats.total_users}</div>
+            <p className="text-xs text-gray-500 mt-1">Registered users</p>
           </CardContent>
         </Card>
 
@@ -90,15 +93,17 @@ export default function AdminDashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalCourses}</div>
-            <p className="text-xs text-gray-500 mt-1">3 published this week</p>
+            <div className="text-2xl font-bold">{stats.total_courses}</div>
+            <p className="text-xs text-gray-500 mt-1">
+              {stats.published_courses} published, {stats.draft_courses} drafts
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">
-              Total Enrollments
+              Published Courses
             </CardTitle>
             <svg
               className="h-4 w-4 text-gray-600"
@@ -115,15 +120,15 @@ export default function AdminDashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalEnrollments}</div>
-            <p className="text-xs text-gray-500 mt-1">+23 this week</p>
+            <div className="text-2xl font-bold">{stats.published_courses}</div>
+            <p className="text-xs text-gray-500 mt-1">Live courses</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">
-              Active Students
+              Total Videos
             </CardTitle>
             <svg
               className="h-4 w-4 text-gray-600"
@@ -135,72 +140,13 @@ export default function AdminDashboard() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
+                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
               />
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.activeStudents}</div>
-            <p className="text-xs text-gray-500 mt-1">Last 7 days</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">New user registered</p>
-                  <p className="text-xs text-gray-500">2 minutes ago</p>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Course published</p>
-                  <p className="text-xs text-gray-500">1 hour ago</p>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Video uploaded</p>
-                  <p className="text-xs text-gray-500">3 hours ago</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
-                <div className="font-medium">Create User</div>
-                <div className="text-xs text-gray-500 mt-1">Add new user</div>
-              </button>
-              <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
-                <div className="font-medium">New Course</div>
-                <div className="text-xs text-gray-500 mt-1">Create course</div>
-              </button>
-              <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
-                <div className="font-medium">Upload Video</div>
-                <div className="text-xs text-gray-500 mt-1">Add video</div>
-              </button>
-              <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
-                <div className="font-medium">View Reports</div>
-                <div className="text-xs text-gray-500 mt-1">Analytics</div>
-              </button>
-            </div>
+            <div className="text-2xl font-bold">{stats.total_videos}</div>
+            <p className="text-xs text-gray-500 mt-1">Video content</p>
           </CardContent>
         </Card>
       </div>
