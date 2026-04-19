@@ -4,29 +4,43 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { adminAPI, User } from '@/lib/admin-api';
+import { Button } from '@/components/ui/button';
+import { adminAPI, User, PaginationMeta } from '@/lib/admin-api';
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>({ total: 0, page: 1, limit: 10, total_pages: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState<string>('');
   const [error, setError] = useState('');
 
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [pagination.page, roleFilter]);
 
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const data = await adminAPI.listUsers();
+      const data = await adminAPI.listUsers({
+        page: pagination.page,
+        limit: pagination.limit,
+        search: search || undefined,
+        role: roleFilter || undefined,
+      });
       setUsers(data.users);
+      setPagination(data.pagination);
     } catch (err) {
       setError('Failed to load users');
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = () => {
+    setPagination(prev => ({ ...prev, page: 1 }));
+    loadUsers();
   };
 
   const handleDelete = async (userId: string) => {
@@ -36,18 +50,16 @@ export default function UsersPage() {
 
     try {
       await adminAPI.deleteUser(userId);
-      setUsers(users.filter(u => u.id !== userId));
+      loadUsers(); // Reload to get fresh data
     } catch (err) {
       alert('Failed to delete user');
       console.error(err);
     }
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.email.toLowerCase().includes(search.toLowerCase()) ||
-      user.full_name.toLowerCase().includes(search.toLowerCase())
-  );
+  const handlePageChange = (newPage: number) => {
+    setPagination(prev => ({ ...prev, page: newPage }));
+  };
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
@@ -91,15 +103,31 @@ export default function UsersPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>All Users ({users.length})</CardTitle>
-            <Input
-              type="search"
-              placeholder="Search users..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="max-w-xs"
-            />
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <CardTitle>All Users ({pagination.total})</CardTitle>
+            </div>
+            <div className="flex gap-4">
+              <Input
+                type="search"
+                placeholder="Search users..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                className="max-w-xs"
+              />
+              <Button onClick={handleSearch} variant="outline">Search</Button>
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="px-3 py-2 border rounded-lg"
+              >
+                <option value="">All Roles</option>
+                <option value="admin">Admin</option>
+                <option value="instructor">Instructor</option>
+                <option value="student">Student</option>
+              </select>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -115,7 +143,7 @@ export default function UsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.map((user) => (
+                {users.map((user) => (
                   <tr key={user.id} className="border-b hover:bg-gray-50">
                     <td className="py-3 px-4">{user.email}</td>
                     <td className="py-3 px-4">{user.full_name}</td>
@@ -150,12 +178,52 @@ export default function UsersPage() {
               </tbody>
             </table>
 
-            {filteredUsers.length === 0 && (
+            {users.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 No users found matching your search.
               </div>
             )}
           </div>
+
+          {/* Pagination */}
+          {pagination.total_pages > 1 && (
+            <div className="flex items-center justify-between mt-6 pt-4 border-t">
+              <div className="text-sm text-gray-600">
+                Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} users
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                  disabled={pagination.page === 1}
+                  variant="outline"
+                  size="sm"
+                >
+                  Previous
+                </Button>
+                <div className="flex gap-1">
+                  {Array.from({ length: pagination.total_pages }, (_, i) => i + 1).map(page => (
+                    <Button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      variant={page === pagination.page ? "default" : "outline"}
+                      size="sm"
+                      className="min-w-[40px]"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                  disabled={pagination.page === pagination.total_pages}
+                  variant="outline"
+                  size="sm"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

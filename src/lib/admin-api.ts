@@ -5,6 +5,7 @@ export interface PaginationParams {
   limit?: number;
   search?: string;
   status?: string;
+  role?: string;
 }
 
 export interface PaginationMeta {
@@ -123,8 +124,15 @@ class AdminAPI {
     return `Bearer ${token}`;
   }
 
-  async listUsers(): Promise<{ users: User[]; total: number }> {
-    const response = await fetch(`${API_BASE_URL}/admin/users`, {
+  async listUsers(params?: PaginationParams): Promise<{ users: User[]; pagination: PaginationMeta }> {
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.role) queryParams.append('role', params.role);
+
+    const url = `${API_BASE_URL}/admin/users${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+    const response = await fetch(url, {
       headers: {
         'Authorization': this.getAuthHeader(),
       },
