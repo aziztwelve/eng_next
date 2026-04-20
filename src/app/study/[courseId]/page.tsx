@@ -74,7 +74,8 @@ export default function StudyPage() {
     const fetchCourse = async () => {
       try {
         const token = localStorage.getItem("access_token");
-        const response = await fetch(`http://localhost:8080/api/v1/courses/${courseId}`, {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+        const response = await fetch(`${apiUrl}/api/v1/courses/${courseId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -119,7 +120,8 @@ export default function StudyPage() {
         if (!videoId) return;
 
         const token = localStorage.getItem("access_token");
-        const response = await fetch(`http://localhost:8080/api/v1/videos/${videoId}/url`, {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+        const response = await fetch(`${apiUrl}/api/v1/videos/${videoId}/url`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
