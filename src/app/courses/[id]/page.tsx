@@ -222,16 +222,28 @@ export default function CourseDetailPage() {
                   </div>
                   
                   <div className="space-y-4">
-                    <Button 
-                      asChild 
-                      size="lg" 
-                      className="w-full h-20 rounded-2xl bg-primary text-primary-foreground font-black text-2xl shadow-[0_6px_0_0_#46a302] hover:bg-primary/90 active:translate-y-1 active:shadow-none transition-all"
-                      disabled={enrollMutation.isPending}
-                    >
-                      <button onClick={handleEnroll}>
-                        {enrollMutation.isPending ? 'Enrolling...' : t("common.enroll")}
-                      </button>
-                    </Button>
+                    {course.enrolled ? (
+                      <Button 
+                        asChild 
+                        size="lg" 
+                        className="w-full h-20 rounded-2xl bg-primary text-primary-foreground font-black text-2xl shadow-[0_6px_0_0_#46a302] hover:bg-primary/90 active:translate-y-1 active:shadow-none transition-all"
+                      >
+                        <Link href={`/study/${course.id}`}>
+                          {t("common.start_learning")}
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button 
+                        asChild 
+                        size="lg" 
+                        className="w-full h-20 rounded-2xl bg-primary text-primary-foreground font-black text-2xl shadow-[0_6px_0_0_#46a302] hover:bg-primary/90 active:translate-y-1 active:shadow-none transition-all"
+                        disabled={enrollMutation.isPending}
+                      >
+                        <button onClick={handleEnroll}>
+                          {enrollMutation.isPending ? 'Enrolling...' : t("common.enroll")}
+                        </button>
+                      </Button>
+                    )}
                     <Button variant="outline" size="lg" className="w-full h-20 rounded-2xl border-4 font-black text-2xl hover:bg-accent/50">
                       Add to Wishlist
                     </Button>
