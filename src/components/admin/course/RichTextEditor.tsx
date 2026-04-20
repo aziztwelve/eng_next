@@ -133,7 +133,7 @@ export default function RichTextEditor({ value, onChange, disabled, placeholder 
             placeholder={placeholder}
             disabled={disabled}
             rows={8}
-            className="w-full px-3 py-2 text-sm font-mono focus:outline-none resize-none"
+            className="w-full px-3 py-2 text-sm font-mono focus:outline-none resize-none text-gray-900 bg-white"
           />
         ) : (
           <div className="px-3 py-2 min-h-[200px] prose prose-sm max-w-none">

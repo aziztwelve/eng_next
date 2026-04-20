@@ -1,6 +1,35 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
+interface UserInfo {
+  name: string;
+  email: string;
+  initials: string;
+}
+
+function getUserFromToken(): UserInfo | null {
+  try {
+    const token = document.cookie.split('; ').find(r => r.startsWith('auth_token='))?.split('=')[1];
+    if (!token) return null;
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const email: string = payload.email || payload.sub || '';
+    const name: string = payload.name || payload.username || email.split('@')[0] || 'Admin';
+    const initials = name.slice(0, 2).toUpperCase();
+    return { name, email, initials };
+  } catch {
+    return null;
+  }
+}
+
 export default function AdminHeader() {
+  const [user, setUser] = useState<UserInfo>({ name: 'Admin', email: '', initials: 'A' });
+
+  useEffect(() => {
+    const info = getUserFromToken();
+    if (info) setUser(info);
+  }, []);
+
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -17,11 +46,11 @@ export default function AdminHeader() {
 
           <div className="flex items-center space-x-3">
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">Admin User</p>
-              <p className="text-xs text-gray-500">admin@example.com</p>
+              <p className="text-sm font-medium text-gray-900">{user.name}</p>
+              <p className="text-xs text-gray-500">{user.email}</p>
             </div>
             <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-              <span className="text-sm font-medium text-gray-700">A</span>
+              <span className="text-sm font-medium text-gray-700">{user.initials}</span>
             </div>
           </div>
         </div>
