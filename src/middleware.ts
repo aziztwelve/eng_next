@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   // Check if accessing admin routes
   if (pathname.startsWith('/admin')) {
     // Skip middleware for login page — but redirect to /admin if already logged in
-    if (pathname === '/admin/login') {
+    if (pathname === '/admin/login' || pathname === '/admin/login/') {
       const token = request.cookies.get('auth_token')?.value;
       const userRole = request.cookies.get('user_role')?.value;
       if (token && userRole === 'admin') {
