@@ -117,11 +117,19 @@ export interface UpdateVideoData {
 
 class AdminAPI {
   private getAuthHeader(): string {
-    // Get token from cookie
     const cookies = document.cookie.split(';');
     const tokenCookie = cookies.find(c => c.trim().startsWith('auth_token='));
     const token = tokenCookie?.split('=')[1];
     return `Bearer ${token}`;
+  }
+
+  private handleResponse(response: Response, errorMsg: string): void {
+    if (!response.ok) {
+      if (response.status === 401) {
+        window.location.href = '/admin/login';
+      }
+      throw new Error(errorMsg);
+    }
   }
 
   async listUsers(params?: PaginationParams): Promise<{ users: User[]; pagination: PaginationMeta }> {
@@ -138,9 +146,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch users');
-    }
+    this.handleResponse(response, 'Failed to fetch users');
 
     return response.json();
   }
@@ -152,9 +158,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch user');
-    }
+    this.handleResponse(response, 'Failed to fetch user');
 
     return response.json();
   }
@@ -169,9 +173,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to update user');
-    }
+    this.handleResponse(response, 'Failed to update user');
 
     return response.json();
   }
@@ -184,9 +186,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to delete user');
-    }
+    this.handleResponse(response, 'Failed to delete user');
   }
 
   // Course management
@@ -204,9 +204,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch courses');
-    }
+    this.handleResponse(response, 'Failed to fetch courses');
 
     return response.json();
   }
@@ -218,9 +216,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch course');
-    }
+    this.handleResponse(response, 'Failed to fetch course');
 
     return response.json();
   }
@@ -235,9 +231,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to create course');
-    }
+    this.handleResponse(response, 'Failed to create course');
 
     return response.json();
   }
@@ -252,9 +246,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to update course');
-    }
+    this.handleResponse(response, 'Failed to update course');
 
     return response.json();
   }
@@ -267,9 +259,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to delete course');
-    }
+    this.handleResponse(response, 'Failed to delete course');
   }
 
   async publishCourse(id: string, publish: boolean): Promise<void> {
@@ -282,9 +272,7 @@ class AdminAPI {
       body: JSON.stringify({ publish }),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to publish course');
-    }
+    this.handleResponse(response, 'Failed to publish course');
   }
 
   // Module management
@@ -298,9 +286,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to create module');
-    }
+    this.handleResponse(response, 'Failed to create module');
 
     return response.json();
   }
@@ -315,9 +301,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to update module');
-    }
+    this.handleResponse(response, 'Failed to update module');
 
     return response.json();
   }
@@ -330,9 +314,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to delete module');
-    }
+    this.handleResponse(response, 'Failed to delete module');
   }
 
   // Lesson management
@@ -346,9 +328,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to create lesson');
-    }
+    this.handleResponse(response, 'Failed to create lesson');
 
     return response.json();
   }
@@ -363,9 +343,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to update lesson');
-    }
+    this.handleResponse(response, 'Failed to update lesson');
 
     return response.json();
   }
@@ -378,9 +356,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to delete lesson');
-    }
+    this.handleResponse(response, 'Failed to delete lesson');
   }
 
   // Step management
@@ -394,9 +370,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to create step');
-    }
+    this.handleResponse(response, 'Failed to create step');
 
     return response.json();
   }
@@ -411,9 +385,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to update step');
-    }
+    this.handleResponse(response, 'Failed to update step');
 
     return response.json();
   }
@@ -426,9 +398,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to delete step');
-    }
+    this.handleResponse(response, 'Failed to delete step');
   }
 
   // Video management
@@ -446,9 +416,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch videos');
-    }
+    this.handleResponse(response, 'Failed to fetch videos');
 
     return response.json();
   }
@@ -460,9 +428,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch video');
-    }
+    this.handleResponse(response, 'Failed to fetch video');
 
     return response.json();
   }
@@ -477,9 +443,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to upload video');
-    }
+    this.handleResponse(response, 'Failed to upload video');
 
     return response.json();
   }
@@ -494,9 +458,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to update video');
-    }
+    this.handleResponse(response, 'Failed to update video');
 
     return response.json();
   }
@@ -509,9 +471,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to delete video');
-    }
+    this.handleResponse(response, 'Failed to delete video');
   }
 
   async getVideoUsage(id: string): Promise<any> {
@@ -521,9 +481,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch video usage');
-    }
+    this.handleResponse(response, 'Failed to fetch video usage');
 
     return response.json();
   }
@@ -535,9 +493,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch dashboard stats');
-    }
+    this.handleResponse(response, 'Failed to fetch dashboard stats');
 
     return response.json();
   }
@@ -554,9 +510,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch quizzes');
-    }
+    this.handleResponse(response, 'Failed to fetch quizzes');
 
     return response.json();
   }
@@ -568,9 +522,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch quiz');
-    }
+    this.handleResponse(response, 'Failed to fetch quiz');
 
     return response.json();
   }
@@ -585,9 +537,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to create quiz');
-    }
+    this.handleResponse(response, 'Failed to create quiz');
 
     return response.json();
   }
@@ -602,9 +552,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to update quiz');
-    }
+    this.handleResponse(response, 'Failed to update quiz');
 
     return response.json();
   }
@@ -617,9 +565,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to delete quiz');
-    }
+    this.handleResponse(response, 'Failed to delete quiz');
   }
 
   async addQuestion(quizId: string, data: any): Promise<any> {
@@ -632,9 +578,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to add question');
-    }
+    this.handleResponse(response, 'Failed to add question');
 
     return response.json();
   }
@@ -649,9 +593,7 @@ class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to update question');
-    }
+    this.handleResponse(response, 'Failed to update question');
 
     return response.json();
   }
@@ -664,9 +606,7 @@ class AdminAPI {
       },
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to delete question');
-    }
+    this.handleResponse(response, 'Failed to delete question');
   }
 }
 

@@ -18,16 +18,22 @@ export default function CoursesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("popular");
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 20;
 
   // Fetch courses from API
-  const { data: courses, isLoading, error } = useCourses({
+  const { data: coursesData, isLoading, error } = useCourses({
     search: searchQuery,
     level: selectedLevels,
-    page: 1,
-    limit: 20,
+    page: currentPage,
+    limit: limit,
     sort: sortBy === "newest" ? "created_at" : undefined,
     order: sortBy === "newest" ? "desc" : undefined,
   });
+
+  const courses = coursesData?.courses || [];
+  const totalCourses = coursesData?.total || 0;
+  const totalPages = Math.ceil(totalCourses / limit);
 
   const toggleLevel = (level: string) => {
     setSelectedLevels(prev => 
@@ -199,6 +205,42 @@ export default function CoursesPage() {
                   </Button>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {!isLoading && courses && courses.length > 0 && totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-12">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="rounded-xl border-2 font-bold"
+              >
+                Previous
+              </Button>
+              
+              <div className="flex items-center gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    onClick={() => setCurrentPage(page)}
+                    className="rounded-xl border-2 font-bold min-w-[40px]"
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="rounded-xl border-2 font-bold"
+              >
+                Next
+              </Button>
             </div>
           )}
         </main>

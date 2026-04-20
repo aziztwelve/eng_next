@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 
 // Courses API calls
 const coursesApi = {
-  getCourses: async (filters?: CourseFilters): Promise<Course[]> => {
+  getCourses: async (filters?: CourseFilters): Promise<{ courses: Course[]; total: number }> => {
     const params = new URLSearchParams();
     
     // Set default values
@@ -30,7 +30,7 @@ const coursesApi = {
     const endpoint = `/courses?${queryString}`;
     
     const response = await ApiClient.get<{ courses: Course[]; total: number }>(endpoint);
-    return response.courses || [];
+    return response;
   },
 
   getCourse: async (id: string): Promise<CourseDetails> => {

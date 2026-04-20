@@ -68,14 +68,15 @@ export default function StudyPage() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
 
   // Загрузка курса
   useEffect(() => {
     const fetchCourse = async () => {
       try {
         const token = localStorage.getItem("access_token");
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-        const response = await fetch(`${apiUrl}/api/v1/courses/${courseId}`, {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+        const response = await fetch(`${apiUrl}/courses/${courseId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -114,25 +115,48 @@ export default function StudyPage() {
     const fetchVideoUrl = async () => {
       try {
         setLoadingVideo(true);
+        setVideoError(null);
         const content = JSON.parse(currentStep.content);
         const videoId = content.video_id;
         
-        if (!videoId) return;
+        console.log('Fetching video URL for:', videoId);
+        
+        if (!videoId) {
+          const error = 'No video_id in content';
+          console.error(error, content);
+          setVideoError(error);
+          return;
+        }
 
         const token = localStorage.getItem("access_token");
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-        const response = await fetch(`${apiUrl}/api/v1/videos/${videoId}/url`, {
+        if (!token) {
+          setVideoError('No access token found. Please login.');
+          return;
+        }
+        
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+        console.log('API URL:', apiUrl);
+        
+        const response = await fetch(`${apiUrl}/videos/${videoId}/url`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         
-        if (!response.ok) throw new Error("Failed to fetch video URL");
+        if (!response.ok) {
+          const error = `Failed to fetch video URL: ${response.status} ${response.statusText}`;
+          console.error(error);
+          setVideoError(error);
+          throw new Error(error);
+        }
         
         const data = await response.json();
+        console.log('Video URL received:', data.signed_url);
         setVideoUrl(data.signed_url);
       } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
         console.error("Error fetching video URL:", error);
+        setVideoError(errorMsg);
       } finally {
         setLoadingVideo(false);
       }
@@ -231,20 +255,41 @@ export default function StudyPage() {
             <div className="aspect-video bg-black relative">
               {loadingVideo ? (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Loader2 className="w-12 h-12 animate-spin text-primary" />
+                  <div className="text-center space-y-4">
+                    <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
+                    <p className="text-white">Loading video...</p>
+                  </div>
+                </div>
+              ) : videoError ? (
+                <div className="absolute inset-0 flex items-center justify-center text-red-400">
+                  <div className="text-center space-y-2 p-4">
+                    <p className="text-lg font-bold">Video Error</p>
+                    <p className="text-sm">{videoError}</p>
+                    <p className="text-xs text-slate-400">Step type: {currentStep?.type}</p>
+                    <p className="text-xs text-slate-400">Content: {currentStep?.content?.substring(0, 100)}</p>
+                  </div>
                 </div>
               ) : videoUrl ? (
                 <video
                   key={videoUrl}
                   controls
+                  autoPlay
                   className="w-full h-full"
                   src={videoUrl}
+                  onError={(e) => {
+                    console.error('Video playback error:', e);
+                    setVideoError('Video playback failed. URL: ' + videoUrl);
+                  }}
                 >
                   Your browser does not support the video tag.
                 </video>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-                  <p>Video not available</p>
+                  <div className="text-center space-y-2">
+                    <p>Video not available</p>
+                    <p className="text-xs">Step type: {currentStep?.type}</p>
+                    <p className="text-xs">Content: {currentStep?.content?.substring(0, 50)}</p>
+                  </div>
                 </div>
               )}
             </div>
