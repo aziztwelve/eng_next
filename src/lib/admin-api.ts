@@ -125,7 +125,7 @@ class AdminAPI {
 
   private handleResponse(response: Response, errorMsg: string): void {
     if (!response.ok) {
-      if (response.status === 401) {
+      if (response.status === 401 && !window.location.pathname.includes('/admin/login')) {
         window.location.href = '/admin/login';
       }
       throw new Error(errorMsg);
