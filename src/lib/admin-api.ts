@@ -119,7 +119,7 @@ class AdminAPI {
   private getAuthHeader(): string {
     const cookies = document.cookie.split(';');
     const tokenCookie = cookies.find(c => c.trim().startsWith('auth_token='));
-    const token = tokenCookie?.split('=')[1];
+    const token = tokenCookie?.trim().substring('auth_token='.length);
     return `Bearer ${token}`;
   }
 

@@ -100,7 +100,7 @@ export default function VideoSelector({ onSelect, onClose, selectedVideoId }: Vi
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm truncate">{video.title}</h4>
+                      <h4 className="font-medium text-sm break-words">{video.title}</h4>
                       <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                         {video.description}
                       </p>
