@@ -33,13 +33,12 @@ export default function RichTextEditor({ value, onChange, disabled, placeholder 
 
   return (
     <div className="border border-gray-300 rounded-lg overflow-hidden">
-      {/* Toolbar */}
       <div className="bg-gray-50 border-b border-gray-300 p-2 flex items-center space-x-1">
         <button
           type="button"
           onClick={() => insertMarkdown('**', '**')}
           disabled={disabled}
-          className="px-2 py-1 text-xs font-bold border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-2 py-1 text-xs font-bold border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 text-gray-700 bg-white"
           title="Bold"
         >
           B
@@ -48,7 +47,7 @@ export default function RichTextEditor({ value, onChange, disabled, placeholder 
           type="button"
           onClick={() => insertMarkdown('*', '*')}
           disabled={disabled}
-          className="px-2 py-1 text-xs italic border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-2 py-1 text-xs italic border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 text-gray-700 bg-white"
           title="Italic"
         >
           I
@@ -57,7 +56,7 @@ export default function RichTextEditor({ value, onChange, disabled, placeholder 
           type="button"
           onClick={() => insertMarkdown('`', '`')}
           disabled={disabled}
-          className="px-2 py-1 text-xs font-mono border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-2 py-1 text-xs font-mono border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 text-gray-700 bg-white"
           title="Code"
         >
           {'<>'}
@@ -67,7 +66,7 @@ export default function RichTextEditor({ value, onChange, disabled, placeholder 
           type="button"
           onClick={() => insertMarkdown('# ')}
           disabled={disabled}
-          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 text-gray-700 bg-white"
           title="Heading"
         >
           H1
@@ -76,7 +75,7 @@ export default function RichTextEditor({ value, onChange, disabled, placeholder 
           type="button"
           onClick={() => insertMarkdown('## ')}
           disabled={disabled}
-          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 text-gray-700 bg-white"
           title="Heading 2"
         >
           H2
@@ -86,7 +85,7 @@ export default function RichTextEditor({ value, onChange, disabled, placeholder 
           type="button"
           onClick={() => insertMarkdown('- ')}
           disabled={disabled}
-          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 text-gray-700 bg-white"
           title="List"
         >
           • List
@@ -95,7 +94,7 @@ export default function RichTextEditor({ value, onChange, disabled, placeholder 
           type="button"
           onClick={() => insertMarkdown('[', '](url)')}
           disabled={disabled}
-          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50"
+          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 text-gray-700 bg-white"
           title="Link"
         >
           🔗
@@ -105,7 +104,7 @@ export default function RichTextEditor({ value, onChange, disabled, placeholder 
           <button
             type="button"
             onClick={() => setActiveTab('edit')}
-            className={`px-3 py-1 text-xs ${
+            className={`px-3 py-1 text-xs text-gray-700 ${
               activeTab === 'edit' ? 'bg-white' : 'bg-gray-100 hover:bg-gray-200'
             }`}
           >
@@ -114,7 +113,7 @@ export default function RichTextEditor({ value, onChange, disabled, placeholder 
           <button
             type="button"
             onClick={() => setActiveTab('preview')}
-            className={`px-3 py-1 text-xs ${
+            className={`px-3 py-1 text-xs text-gray-700 ${
               activeTab === 'preview' ? 'bg-white' : 'bg-gray-100 hover:bg-gray-200'
             }`}
           >
