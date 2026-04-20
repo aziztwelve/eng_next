@@ -369,33 +369,50 @@ export default function StudyPage() {
                         const isActive = mIdx === currentModuleIndex && lIdx === currentLessonIndex;
                         
                         return (
-                          <button
-                            key={lesson.id}
-                            onClick={() => {
-                              setCurrentModuleIndex(mIdx);
-                              setCurrentLessonIndex(lIdx);
-                              setCurrentStepIndex(0);
-                            }}
-                            className={cn(
-                              "flex items-start gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-800/30",
-                              isActive && "bg-slate-800 border-l-4 border-primary px-[13px]"
-                            )}
-                          >
-                            <div className="mt-0.5">
-                              <PlayCircle className={cn("w-4 h-4", isActive ? "text-primary" : "text-slate-400")} />
-                            </div>
-                            <div className="space-y-1">
-                              <p className={cn(
-                                "text-sm font-medium leading-tight",
-                                isActive ? "text-white" : "text-slate-400"
-                              )}>
-                                {lesson.order_index}. {lesson.title}
-                              </p>
-                              <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase">
-                                <span>{lesson.steps.length} steps</span>
+                          <div key={lesson.id}>
+                            <button
+                              onClick={() => {
+                                setCurrentModuleIndex(mIdx);
+                                setCurrentLessonIndex(lIdx);
+                                setCurrentStepIndex(0);
+                              }}
+                              className={cn(
+                                "w-full flex items-start gap-3 px-4 py-4 text-left transition-colors hover:bg-slate-800/30",
+                                isActive && "bg-slate-800 border-l-4 border-primary px-[13px]"
+                              )}
+                            >
+                              <div className="mt-0.5">
+                                <PlayCircle className={cn("w-4 h-4", isActive ? "text-primary" : "text-slate-400")} />
                               </div>
-                            </div>
-                          </button>
+                              <div className="space-y-1">
+                                <p className={cn(
+                                  "text-sm font-medium leading-tight",
+                                  isActive ? "text-white" : "text-slate-400"
+                                )}>
+                                  {lesson.order_index}. {lesson.title}
+                                </p>
+                                <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold uppercase">
+                                  <span>{lesson.steps.length} steps</span>
+                                </div>
+                              </div>
+                            </button>
+                            {isActive && lesson.steps.map((step, sIdx) => (
+                              <button
+                                key={step.id}
+                                onClick={() => setCurrentStepIndex(sIdx)}
+                                className={cn(
+                                  "w-full flex items-center gap-2 pl-10 pr-4 py-2 text-left text-xs transition-colors hover:bg-slate-800/30",
+                                  sIdx === currentStepIndex ? "text-primary font-semibold" : "text-slate-500"
+                                )}
+                              >
+                                <span className="w-4 h-4 rounded-full border flex items-center justify-center shrink-0 text-[10px]"
+                                  style={{ borderColor: sIdx === currentStepIndex ? 'var(--primary)' : '#475569' }}>
+                                  {sIdx + 1}
+                                </span>
+                                {step.title}
+                              </button>
+                            ))}
+                          </div>
                         );
                       })}
                     </div>
