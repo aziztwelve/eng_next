@@ -1,22 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 
 export default function AdminLoginPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    const token = document.cookie.split('; ').find(r => r.startsWith('auth_token='))?.split('=')[1];
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.role === 'admin') router.replace('/admin');
-      } catch {}
-    }
-  }, [router]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -55,8 +43,8 @@ export default function AdminLoginPage() {
       document.cookie = `auth_token=${data.access_token}; path=/; max-age=3600`;
       document.cookie = `user_role=${tokenPayload.role}; path=/; max-age=3600`;
 
-      // Redirect to admin dashboard
-      router.push('/admin');
+      // Hard redirect so middleware sees the new cookies
+      window.location.href = '/admin';
     } catch (err) {
       setError('Invalid email or password');
       setLoading(false);
