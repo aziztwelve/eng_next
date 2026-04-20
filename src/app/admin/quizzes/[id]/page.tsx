@@ -245,6 +245,13 @@ export default function EditQuizPage({ params }: Props) {
                     <div className="font-medium text-gray-900">
                       {index + 1}. {q.question.question_text}
                     </div>
+                    {q.question.image_url && (
+                      <img
+                        src={q.question.image_url}
+                        alt="Question"
+                        className="mt-2 max-w-xs rounded border border-gray-300"
+                      />
+                    )}
                     <div className="text-sm text-gray-600 mt-1">
                       Type: {q.question.question_type} • Points: {q.question.points}
                     </div>

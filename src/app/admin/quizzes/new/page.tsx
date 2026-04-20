@@ -21,6 +21,7 @@ interface Question {
   question_type: string;
   question_text: string;
   explanation: string;
+  image_url?: string;
   points: number;
   order_index: number;
   answers: Answer[];
@@ -56,6 +57,7 @@ export default function NewQuizPage() {
     question_type: 'multiple_choice',
     question_text: '',
     explanation: '',
+    image_url: '',
     points: 1,
     order_index: 1,
     answers: [
@@ -354,6 +356,13 @@ export default function NewQuizPage() {
                       <div className="font-medium text-gray-900">
                         {index + 1}. {q.question_text}
                       </div>
+                      {q.image_url && (
+                        <img
+                          src={q.image_url}
+                          alt="Question"
+                          className="mt-2 max-w-xs rounded border border-gray-300"
+                        />
+                      )}
                       <div className="text-sm text-gray-600 mt-1">
                         {q.answers.length} answers • {q.points} point(s)
                       </div>
@@ -415,6 +424,31 @@ export default function NewQuizPage() {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               placeholder="Explain the correct answer..."
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Image URL (optional)
+            </label>
+            <input
+              type="url"
+              value={currentQuestion.image_url || ''}
+              onChange={(e) => setCurrentQuestion({ ...currentQuestion, image_url: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+              placeholder="https://example.com/image.jpg"
+            />
+            {currentQuestion.image_url && (
+              <div className="mt-2">
+                <img
+                  src={currentQuestion.image_url}
+                  alt="Question preview"
+                  className="max-w-xs rounded border border-gray-300"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           <div>
