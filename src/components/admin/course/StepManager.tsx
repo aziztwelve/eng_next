@@ -266,7 +266,7 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
               <button
                 onClick={handleCancel}
                 disabled={saving}
-                className="px-3 py-1.5 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                className="px-3 py-1.5 text-xs border border-gray-300 rounded hover:bg-gray-100 transition-colors text-gray-700 bg-white"
               >
                 Cancel
               </button>
