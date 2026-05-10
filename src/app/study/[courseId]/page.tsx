@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -307,8 +308,26 @@ export default function StudyPage() {
             </div>
 
             {currentStep?.type === "text" && (
-              <div className="prose prose-invert max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: currentStep.content }} />
+              <div className="space-y-4 text-slate-200 leading-relaxed">
+                <ReactMarkdown
+                  components={{
+                    h1: ({ children }) => <h1 className="text-3xl font-bold text-white mt-6 mb-3">{children}</h1>,
+                    h2: ({ children }) => <h2 className="text-2xl font-bold text-white mt-5 mb-2">{children}</h2>,
+                    h3: ({ children }) => <h3 className="text-xl font-semibold text-white mt-4 mb-2">{children}</h3>,
+                    p: ({ children }) => <p className="text-slate-200 leading-7 mb-3">{children}</p>,
+                    ul: ({ children }) => <ul className="list-disc list-inside space-y-1 mb-3 text-slate-200">{children}</ul>,
+                    ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 mb-3 text-slate-200">{children}</ol>,
+                    li: ({ children }) => <li className="text-slate-200">{children}</li>,
+                    a: ({ href, children }) => <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">{children}</a>,
+                    code: ({ children }) => <code className="bg-slate-800 text-green-400 px-1.5 py-0.5 rounded text-sm font-mono">{children}</code>,
+                    pre: ({ children }) => <pre className="bg-slate-800 rounded-lg p-4 overflow-x-auto mb-3 text-sm font-mono text-green-400">{children}</pre>,
+                    blockquote: ({ children }) => <blockquote className="border-l-4 border-blue-500 pl-4 italic text-slate-400 mb-3">{children}</blockquote>,
+                    strong: ({ children }) => <strong className="font-bold text-white">{children}</strong>,
+                    em: ({ children }) => <em className="italic text-slate-300">{children}</em>,
+                  }}
+                >
+                  {(() => { try { return JSON.parse(currentStep.content).text ?? currentStep.content; } catch { return currentStep.content; } })()}
+                </ReactMarkdown>
               </div>
             )}
           </div>

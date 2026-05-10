@@ -56,7 +56,7 @@ export default function VideoSelector({ onSelect, onClose, selectedVideoId }: Vi
         {/* Header */}
         <div className="p-4 border-b">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold">Select Video</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Select Video</h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600"
@@ -69,7 +69,7 @@ export default function VideoSelector({ onSelect, onClose, selectedVideoId }: Vi
             placeholder="Search videos..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
           />
         </div>
 
@@ -95,16 +95,16 @@ export default function VideoSelector({ onSelect, onClose, selectedVideoId }: Vi
                 >
                   <div className="flex items-start space-x-3">
                     <div className="flex-shrink-0">
-                      <div className="w-24 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-400">
+                      <div className="w-24 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-500">
                         🎥
                       </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm break-words">{video.title}</h4>
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                    <div className="flex-1 overflow-hidden">
+                      <h4 className="font-medium text-sm text-gray-900 truncate">{video.title}</h4>
+                      <p className="text-xs text-gray-600 mt-1 line-clamp-2">
                         {video.description}
                       </p>
-                      <div className="flex items-center space-x-3 mt-2 text-xs text-gray-400">
+                      <div className="flex items-center space-x-3 mt-2 text-xs text-gray-500">
                         <span>{formatDuration(video.duration_seconds)}</span>
                         <span>•</span>
                         <span className={`px-2 py-0.5 rounded-full ${
@@ -136,7 +136,7 @@ export default function VideoSelector({ onSelect, onClose, selectedVideoId }: Vi
           <div className="flex items-center space-x-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-700"
             >
               Cancel
             </button>
