@@ -1,52 +1,35 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { adminLogin } from './actions';
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const router = useRouter();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Clear old cookies on mount
+  useEffect(() => {
+    document.cookie = 'auth_token=; path=/; max-age=0';
+    document.cookie = 'user_role=; path=/; max-age=0';
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    const formData = new FormData(e.currentTarget);
+    const result = await adminLogin(formData);
 
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
-      const data = await response.json();
-
-      // Validate token has admin role
-      const tokenPayload = JSON.parse(atob(data.access_token.split('.')[1]));
-      
-      if (tokenPayload.role !== 'admin') {
-        setError('Access denied. Admin role required.');
-        setLoading(false);
-        return;
-      }
-
-      // Store tokens in cookies
-      document.cookie = `auth_token=${data.access_token}; path=/; max-age=3600`;
-      document.cookie = `user_role=${tokenPayload.role}; path=/; max-age=3600`;
-
-      // Hard redirect so middleware sees the new cookies
-      window.location.href = '/admin';
-    } catch (err) {
-      setError('Invalid email or password');
+    if (result.success) {
+      router.push('/admin');
+      router.refresh();
+    } else {
+      setError(result.error || 'Login failed');
       setLoading(false);
     }
   };
@@ -74,9 +57,8 @@ export default function AdminLoginPage() {
               </label>
               <Input
                 id="email"
+                name="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@example.com"
                 required
                 disabled={loading}
@@ -89,9 +71,8 @@ export default function AdminLoginPage() {
               </label>
               <Input
                 id="password"
+                name="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
                 disabled={loading}

@@ -115,6 +115,63 @@ export interface UpdateVideoData {
   description: string;
 }
 
+// === Learning Tracks (Phase 0) ===
+export interface Track {
+  id: string;
+  code: string;
+  title: string;
+  description: string;
+  icon_url: string;
+  language: string;
+  level: string;
+  track_type: string; // thematic | daily | stories | podcast
+  is_published: boolean;
+  sort_order: number;
+  created_by: string;
+  created_at: string | { seconds: number; nanos: number };
+  updated_at: string | { seconds: number; nanos: number };
+}
+
+export interface TrackLesson {
+  id: string;
+  module_id: string; // "" => standalone
+  title: string;
+  description: string;
+  order_index: number;
+  created_at: string | { seconds: number; nanos: number };
+  updated_at: string | { seconds: number; nanos: number };
+}
+
+export interface CreateTrackData {
+  code: string;
+  title: string;
+  description?: string;
+  icon_url?: string;
+  language?: string;
+  level?: string;
+  track_type?: string;
+  sort_order?: number;
+}
+
+export interface UpdateTrackData {
+  title?: string;
+  description?: string;
+  icon_url?: string;
+  language?: string;
+  level?: string;
+  track_type?: string;
+  sort_order?: number;
+}
+
+export interface TrackListParams {
+  language?: string;
+  level?: string;
+  track_type?: string;
+  search?: string;
+  limit?: number;
+  offset?: number;
+}
+
 class AdminAPI {
   private getAuthHeader(): string {
     const cookies = document.cookie.split(';');
@@ -607,6 +664,114 @@ class AdminAPI {
     });
 
     this.handleResponse(response, 'Failed to delete question');
+  }
+
+  // === Learning Tracks ===
+  async listTracks(params?: TrackListParams): Promise<{ tracks: Track[]; total: number }> {
+    const q = new URLSearchParams();
+    if (params?.language) q.append('language', params.language);
+    if (params?.level) q.append('level', params.level);
+    if (params?.track_type) q.append('track_type', params.track_type);
+    if (params?.search) q.append('search', params.search);
+    if (params?.limit) q.append('limit', params.limit.toString());
+    if (params?.offset) q.append('offset', params.offset.toString());
+
+    const url = `${API_BASE_URL}/admin/tracks${q.toString() ? '?' + q.toString() : ''}`;
+    const response = await fetch(url, {
+      headers: { 'Authorization': this.getAuthHeader() },
+    });
+    this.handleResponse(response, 'Failed to fetch tracks');
+    const data = await response.json();
+    return { tracks: data.tracks || [], total: data.total || 0 };
+  }
+
+  async getTrack(idOrCode: string, includeLessons = false): Promise<Track & { lessons?: TrackLesson[] }> {
+    // Public endpoint поддерживает id или code
+    const q = includeLessons ? '?include_lessons=true' : '';
+    const response = await fetch(`${API_BASE_URL}/tracks/${idOrCode}${q}`, {
+      headers: { 'Authorization': this.getAuthHeader() },
+    });
+    this.handleResponse(response, 'Failed to fetch track');
+    return response.json();
+  }
+
+  async createTrack(data: CreateTrackData): Promise<Track> {
+    const response = await fetch(`${API_BASE_URL}/admin/tracks`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    this.handleResponse(response, 'Failed to create track');
+    return response.json();
+  }
+
+  async updateTrack(id: string, data: UpdateTrackData): Promise<Track> {
+    const response = await fetch(`${API_BASE_URL}/admin/tracks/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    this.handleResponse(response, 'Failed to update track');
+    return response.json();
+  }
+
+  async deleteTrack(id: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/tracks/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': this.getAuthHeader() },
+    });
+    this.handleResponse(response, 'Failed to delete track');
+  }
+
+  async publishTrack(id: string, isPublished: boolean): Promise<Track> {
+    const response = await fetch(`${API_BASE_URL}/admin/tracks/${id}/publish`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ is_published: isPublished }),
+    });
+    this.handleResponse(response, 'Failed to publish track');
+    return response.json();
+  }
+
+  async addLessonToTrack(trackId: string, lessonId: string, orderIndex = 0): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/tracks/${trackId}/lessons`, {
+      method: 'POST',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ lesson_id: lessonId, order_index: orderIndex }),
+    });
+    this.handleResponse(response, 'Failed to add lesson to track');
+  }
+
+  async removeLessonFromTrack(trackId: string, lessonId: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/tracks/${trackId}/lessons/${lessonId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': this.getAuthHeader() },
+    });
+    this.handleResponse(response, 'Failed to remove lesson from track');
+  }
+
+  async reorderTrackLessons(trackId: string, lessonIds: string[]): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/admin/tracks/${trackId}/lessons/reorder`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': this.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ lesson_ids: lessonIds }),
+    });
+    this.handleResponse(response, 'Failed to reorder lessons');
   }
 }
 

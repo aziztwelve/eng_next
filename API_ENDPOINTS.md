@@ -387,6 +387,86 @@ completeMutation.mutate({
 
 ---
 
+### 🛤️ Learning Tracks (Phase 0)
+
+Тематические подборки standalone-уроков: Daily English, Short Stories, Podcast Bites и т.п.
+
+#### GET /tracks
+Список опубликованных треков.
+
+**Query:** `language`, `level`, `track_type`, `search`, `limit`, `offset`.
+
+**Response:**
+```json
+{
+  "tracks": [
+    {
+      "id": "uuid",
+      "code": "daily-english",
+      "title": "Daily English",
+      "description": "Short 5-minute lessons",
+      "icon_url": "https://...",
+      "language": "en",
+      "level": "A2",
+      "track_type": "daily",
+      "is_published": true,
+      "sort_order": 1,
+      "created_at": { "seconds": 1778567185, "nanos": 0 }
+    }
+  ],
+  "total": 3
+}
+```
+
+#### GET /tracks/{idOrCode}
+Получение трека по UUID или `code`. Опционально с уроками.
+
+**Query:** `include_lessons=true` — добавляет массив `lessons` в ответ.
+
+**Response (с уроками):**
+```json
+{
+  "id": "uuid",
+  "code": "daily-english",
+  "title": "Daily English",
+  "lessons": [
+    {
+      "id": "lesson-uuid",
+      "module_id": "",
+      "title": "Daily English: Greetings at the Office",
+      "order_index": 0
+    }
+  ]
+}
+```
+`module_id: ""` означает standalone-урок.
+
+#### Admin endpoints (требуют `admin` role)
+
+| Method | Path | Описание |
+| --- | --- | --- |
+| GET | `/admin/tracks` | Список треков (включая черновики) |
+| POST | `/admin/tracks` | Создание трека |
+| PUT | `/admin/tracks/:id` | Обновление (partial) |
+| DELETE | `/admin/tracks/:id` | Удаление |
+| PUT | `/admin/tracks/:id/publish` | Toggle publish (`{"is_published":true}`) |
+| POST | `/admin/tracks/:id/lessons` | Привязать урок (`{"lesson_id":"uuid","order_index":0}`) |
+| DELETE | `/admin/tracks/:id/lessons/:lessonId` | Отвязать |
+| PUT | `/admin/tracks/:id/lessons/reorder` | Атомарный reorder (`{"lesson_ids":["uuid1","uuid2"]}`) |
+
+Поля `code` (уникальный slug) и `title` обязательны при создании.
+`code` нельзя поменять через UI — только напрямую в БД.
+`created_by` подставляется backend'ом из JWT.
+
+**Frontend API client:** `adminAPI.listTracks() / getTrack() / createTrack() / updateTrack() /
+deleteTrack() / publishTrack() / addLessonToTrack() / removeLessonFromTrack() /
+reorderTrackLessons()` — см. `src/lib/admin-api.ts`.
+
+**Admin UI:** `/admin/tracks` — список, `/admin/tracks/new` — создание,
+`/admin/tracks/[id]` — редактирование + управление уроками с reorder.
+
+---
+
 ## 📝 Примеры использования
 
 ### Полный flow обучения

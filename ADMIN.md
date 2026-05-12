@@ -41,6 +41,19 @@ Admin panel for managing users, courses, and videos. Built with Next.js 15, Type
 - Delete video
 - Video usage tracking
 
+### Phase 0: Learning Tracks (standalone content) ✅
+- List tracks with `track_type` filter and search
+- Create track via dedicated form (code, title, description, icon_url, language, level, type, sort_order)
+- Edit track on `/admin/tracks/[id]` page
+- Publish / unpublish toggle (list + detail view)
+- Delete track (lessons preserved, links cascaded)
+- Manage attached lessons:
+  - Add lesson by UUID (works for both standalone and module-bound lessons)
+  - Remove from track
+  - Reorder via ↑/↓ buttons (atomic backend `reorderTrackLessons`)
+- Visual badge: `standalone` vs `in module` for each attached lesson
+- Backward-compatible: existing courses untouched; new `lessons.module_id` is nullable
+
 ## Architecture
 
 ### Routes
@@ -53,6 +66,9 @@ Admin panel for managing users, courses, and videos. Built with Next.js 15, Type
 ├── /courses            # Course list
 │   ├── /new           # Create course
 │   └── /[id]          # Edit course (with content management)
+├── /tracks             # Learning tracks list
+│   ├── /new           # Create track
+│   └── /[id]          # Edit track + manage lessons (add / remove / reorder)
 └── /videos             # Video list
     └── /upload        # Upload video
 ```
