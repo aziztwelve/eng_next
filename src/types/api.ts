@@ -201,15 +201,56 @@ export interface AIWritingContent {
 
 export interface LessonDetails {
   id: string;
-  module_id: string;
+  module_id: string; // "" => standalone (Phase 0)
   title: string;
   description: string;
   order_index: number;
+  is_standalone?: boolean; // присутствует у /lessons/:id
 }
 
 export interface LessonWithSteps {
   lesson: LessonDetails;
   steps: Step[];
+}
+
+// ============================================
+// LEARNING TRACKS (Phase 0)
+// ============================================
+
+export type TrackType = 'thematic' | 'daily' | 'stories' | 'podcast';
+
+export interface Track {
+  id: string;
+  code: string;
+  title: string;
+  description: string;
+  icon_url: string;
+  language: string;
+  level: string;
+  track_type: TrackType | string;
+  is_published: boolean;
+  sort_order: number;
+  created_by?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface TrackWithLessons extends Track {
+  lessons?: LessonDetails[];
+}
+
+export interface ListTracksResponse {
+  tracks: Track[];
+  total: number;
+}
+
+export interface TrackFilters {
+  language?: string;
+  level?: string;
+  track_type?: TrackType | string;
+  search?: string;
+  limit?: number;
+  offset?: number;
 }
 
 export interface StepWithVideo {

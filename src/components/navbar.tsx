@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Home, BookOpen, LayoutDashboard, Languages, Flame, Heart, Zap, LogOut, User } from "lucide-react";
+import { Home, BookOpen, LayoutDashboard, Languages, Flame, Heart, Zap, LogOut, User, Compass } from "lucide-react";
 
 export function Navbar() {
   const { language, setLanguage, t } = useLanguage();
@@ -29,6 +29,7 @@ export function Navbar() {
 
   const navItems = [
     { to: "/", icon: Home, label: t("common.home") },
+    { to: "/tracks", icon: Compass, label: t("common.tracks") },
     { to: "/courses", icon: BookOpen, label: t("common.courses") },
     { to: "/dashboard", icon: LayoutDashboard, label: t("common.dashboard") },
   ];
