@@ -54,9 +54,8 @@ export function useCompleteStep() {
       queryClient.invalidateQueries({ 
         queryKey: ['courseProgress', response.lesson_progress.course_id] 
       });
-      
-      // Show notification
-      toast.success('Step completed! 🎉');
+      // Не показываем "Step completed!" — за UX отвечает useLessonGamificationFx
+      // (+XP toast / level-up / achievements / daily-goal).
     },
     onError: (error: any) => {
       toast.error(error?.message || 'Failed to save progress');

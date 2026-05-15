@@ -4,6 +4,12 @@ import { useState } from 'react';
 import { Step, adminAPI } from '@/lib/admin-api';
 import VideoSelector from './VideoSelector';
 import RichTextEditor from './RichTextEditor';
+import {
+  PhaseTwoStepEditor,
+  isPhaseTwoStepType,
+  PHASE_TWO_STEP_TYPES,
+} from '@/components/admin/step-editors/PhaseTwoStepEditor';
+import { QuizEditor } from '@/components/admin/step-editors/QuizEditor';
 
 interface StepManagerProps {
   lessonId: string;
@@ -11,7 +17,18 @@ interface StepManagerProps {
   onUpdate: () => void;
 }
 
-type StepType = 'text' | 'video' | 'quiz';
+// Phase 2: расширяем enum — admin может создавать interactive шаги.
+// `legacy` группа: text/video/quiz; `phase2` — translate/match_pairs/...
+type StepType =
+  | 'text'
+  | 'video'
+  | 'quiz'
+  | 'translate'
+  | 'match_pairs'
+  | 'listening'
+  | 'fill_blank'
+  | 'tap_words'
+  | 'story';
 
 export default function StepManager({ lessonId, steps, onUpdate }: StepManagerProps) {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -34,10 +51,8 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
         stepContent = JSON.stringify({ text: content });
       } else if (stepType === 'video') {
         stepContent = JSON.stringify({ video_id: videoId });
-      } else if (stepType === 'quiz') {
-        // Content is already JSON string from textarea
-        stepContent = content;
       }
+      // quiz и phase-2 типы: content уже JSON string в state.
 
       await adminAPI.createStep(lessonId, {
         type: stepType,
@@ -69,11 +84,12 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
       } else if (step.type === 'video') {
         setVideoId(parsed.video_id || '');
         setContent('');
-      } else if (step.type === 'quiz') {
+      } else {
+        // quiz и phase-2 типы — содержимое в content уже JSON string,
+        // редактор сам распарсит.
         setContent(step.content || '');
       }
-    } catch (e) {
-      // Fallback for non-JSON content
+    } catch {
       setContent(step.content || '');
     }
   };
@@ -89,9 +105,8 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
         stepContent = JSON.stringify({ text: content });
       } else if (stepType === 'video') {
         stepContent = JSON.stringify({ video_id: videoId });
-      } else if (stepType === 'quiz') {
-        stepContent = content;
       }
+      // quiz и phase-2 типы: content уже JSON string в state.
 
       await adminAPI.updateStep(editingStep.id, {
         type: stepType,
@@ -136,14 +151,16 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
 
   const getStepIcon = (type: string) => {
     switch (type) {
-      case 'text':
-        return '📝';
-      case 'video':
-        return '🎥';
-      case 'quiz':
-        return '❓';
-      default:
-        return '📄';
+      case 'text': return '📝';
+      case 'video': return '🎥';
+      case 'quiz': return '❓';
+      case 'translate': return '🔁';
+      case 'match_pairs': return '🧩';
+      case 'listening': return '🎧';
+      case 'fill_blank': return '✍️';
+      case 'tap_words': return '👆';
+      case 'story': return '📖';
+      default: return '📄';
     }
   };
 
@@ -172,13 +189,28 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
               </label>
               <select
                 value={stepType}
-                onChange={(e) => setStepType(e.target.value as StepType)}
+                onChange={(e) => {
+                  const nextType = e.target.value as StepType;
+                  setStepType(nextType);
+                  // При переключении на phase-2 / quiz — сбрасываем content,
+                  // чтобы старый JSON не привёл к ошибке парсинга.
+                  if (isPhaseTwoStepType(nextType) || nextType === 'quiz') {
+                    setContent('');
+                  }
+                }}
                 disabled={saving}
                 className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
               >
-                <option value="text">Text Content</option>
-                <option value="video">Video</option>
-                <option value="quiz">Quiz</option>
+                <optgroup label="Legacy (Phase 0)">
+                  <option value="text">Text Content</option>
+                  <option value="video">Video</option>
+                  <option value="quiz">Quiz</option>
+                </optgroup>
+                <optgroup label="Interactive (Phase 2)">
+                  {PHASE_TWO_STEP_TYPES.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </optgroup>
               </select>
             </div>
 
@@ -237,21 +269,18 @@ export default function StepManager({ lessonId, steps, onUpdate }: StepManagerPr
             )}
 
             {stepType === 'quiz' && (
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Quiz Content (JSON) *
-                </label>
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder='{"questions": [...]}'
-                  disabled={saving}
-                  rows={4}
-                  className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono"
+              <div className="bg-white border rounded-md p-3">
+                <QuizEditor contentJSON={content} onChange={setContent} />
+              </div>
+            )}
+
+            {isPhaseTwoStepType(stepType) && (
+              <div className="bg-white border rounded-md p-3">
+                <PhaseTwoStepEditor
+                  stepType={stepType}
+                  contentJSON={content}
+                  onChange={setContent}
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Quiz builder coming soon. For now, use JSON format.
-                </p>
               </div>
             )}
 

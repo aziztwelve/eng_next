@@ -2,6 +2,9 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { HEARTS_KEY } from '@/hooks/use-hearts';
+import { toast } from 'sonner';
 
 interface Props {
   params: Promise<{ quizId: string; attemptId: string }>;
@@ -26,6 +29,7 @@ interface Question {
 export default function QuizAttemptPage({ params }: Props) {
   const resolvedParams = use(params);
   const router = useRouter();
+  const qc = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [quiz, setQuiz] = useState<any>(null);
@@ -118,7 +122,7 @@ export default function QuizAttemptPage({ params }: Props) {
       const token = localStorage.getItem('access_token');
       const selectedAnswers = answers[questionId] || [];
 
-      await fetch(`/api/v1/attempts/${resolvedParams.attemptId}/answers`, {
+      const resp = await fetch(`/api/v1/attempts/${resolvedParams.attemptId}/answers`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -130,6 +134,23 @@ export default function QuizAttemptPage({ params }: Props) {
           selected_answer_ids: selectedAnswers,
         }),
       });
+
+      // Ответ имеет shape { answer, hearts? }. hearts заполняется только
+      // когда ответ был неверным и gamification-service интегрирован.
+      if (resp.ok) {
+        const body = await resp.json().catch(() => null);
+        if (body?.hearts) {
+          qc.setQueryData(HEARTS_KEY, body.hearts);
+          const left = body.hearts.hearts ?? 0;
+          if (!body.hearts.unlimited) {
+            toast.error(
+              left > 0
+                ? `Неверно. Осталось жизней: ${left}`
+                : 'Жизни закончились — подожди регенерации или восстанови их'
+            );
+          }
+        }
+      }
     } catch (err) {
       console.error('Failed to submit answer:', err);
     }

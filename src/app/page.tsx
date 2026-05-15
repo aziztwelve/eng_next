@@ -3,15 +3,23 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, ArrowRight, Flame, Trophy, Heart, Zap, Play } from "lucide-react";
+import { Star, ArrowRight, Flame, Trophy, Heart, Zap, Play, Compass } from "lucide-react";
 import Link from "next/link";
 import { COURSES, LEVELS, USER_STATS } from "@/lib/mock-data";
 import { useLanguage } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { useTracks } from "@/hooks/use-tracks";
+import { useDailyLesson } from "@/hooks/use-daily-lesson";
+import { TrackCard } from "@/components/tracks/TrackCard";
+import { DailyLessonCard } from "@/components/tracks/DailyLessonCard";
 
 export default function HomePage() {
   const { t } = useLanguage();
   const featuredCourses = COURSES.slice(0, 3);
+
+  const { track: dailyTrack, lesson: dailyLesson } = useDailyLesson();
+  const tracksQuery = useTracks({ limit: 6 });
+  const tracks = tracksQuery.data?.tracks ?? [];
 
   return (
     <div className="space-y-16 pb-20">
@@ -91,6 +99,38 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Daily Lesson (Phase 0) */}
+      {dailyLesson && dailyTrack && (
+        <section>
+          <DailyLessonCard track={dailyTrack} lesson={dailyLesson} />
+        </section>
+      )}
+
+      {/* Tracks (Phase 0) */}
+      {tracks.length > 0 && (
+        <section className="space-y-8">
+          <div className="flex items-end justify-between px-2">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 rounded-full bg-secondary/20 px-4 py-1.5 text-sm font-bold text-secondary border border-secondary/30">
+                <Compass className="w-4 h-4" />
+                {t("common.explore_tracks")}
+              </div>
+              <h2 className="text-4xl font-black">{t("common.tracks")}</h2>
+            </div>
+            <Button variant="ghost" asChild className="font-black text-primary hover:text-primary/80 hover:bg-transparent hidden sm:flex">
+              <Link href="/tracks" className="gap-2">
+                {t("common.all")} <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tracks.slice(0, 6).map((track) => (
+              <TrackCard key={track.id} track={track} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Stats Section */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-6">
