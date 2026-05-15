@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 interface RichTextEditorProps {
@@ -8,13 +8,16 @@ interface RichTextEditorProps {
   onChange: (value: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  /** Высота textarea (rows). */
+  rows?: number;
 }
 
-export default function RichTextEditor({ value, onChange, disabled, placeholder }: RichTextEditorProps) {
+export default function RichTextEditor({ value, onChange, disabled, placeholder, rows = 8 }: RichTextEditorProps) {
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const insertMarkdown = (before: string, after: string = '') => {
-    const textarea = document.getElementById('markdown-editor') as HTMLTextAreaElement;
+    const textarea = textareaRef.current;
     if (!textarea) return;
 
     const start = textarea.selectionStart;
@@ -126,16 +129,16 @@ export default function RichTextEditor({ value, onChange, disabled, placeholder 
       <div className="bg-white">
         {activeTab === 'edit' ? (
           <textarea
-            id="markdown-editor"
+            ref={textareaRef}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
             disabled={disabled}
-            rows={8}
+            rows={rows}
             className="w-full px-3 py-2 text-sm font-mono focus:outline-none resize-none text-gray-900 bg-white"
           />
         ) : (
-          <div className="px-3 py-2 min-h-[200px] prose prose-sm max-w-none">
+          <div className="px-3 py-2 prose prose-sm max-w-none">
             {value ? (
               <ReactMarkdown>{value}</ReactMarkdown>
             ) : (

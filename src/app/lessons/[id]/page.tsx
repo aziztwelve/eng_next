@@ -12,8 +12,12 @@ import { toast } from "sonner";
 
 import { useLesson } from "@/hooks/use-lessons";
 import { useCompleteStep } from "@/hooks/use-progress";
+import { useStepSubmit } from "@/hooks/use-step-submit";
+import { useLessonGamificationFx } from "@/hooks/use-gamification-fx";
 import { LessonTypeBadge, type LessonContext } from "@/components/tracks/LessonTypeBadge";
+import { StepRenderer } from "@/components/lesson/StepRenderer";
 import type { Step, QuizContent, TextContent, VideoContent } from "@/types/api";
+import { isInteractiveStep } from "@/types/api";
 
 function parseStepContent<T>(step: Step): T | null {
   try {
@@ -121,6 +125,8 @@ export default function LessonPage() {
 
   const { data, isLoading, error } = useLesson(lessonId);
   const completeStep = useCompleteStep();
+  const submitStep = useStepSubmit();
+  const fireGamificationFx = useLessonGamificationFx();
 
   const [index, setIndex] = useState(0);
   const [stepStartedAt, setStepStartedAt] = useState<number>(() => Date.now());
@@ -156,28 +162,53 @@ export default function LessonPage() {
     );
   }
 
+  // Переход к следующему шагу / завершение урока.
+  const advance = () => {
+    if (index + 1 < steps.length) {
+      setIndex(index + 1);
+      setStepStartedAt(Date.now());
+    } else {
+      toast.success("Урок пройден!");
+      router.push(context === "standalone" ? "/tracks" : "/dashboard");
+    }
+  };
+
+  // Legacy путь (text/video): MarkStepComplete + advance.
   const handleComplete = async () => {
     if (!currentStep) return;
     const seconds = Math.max(1, Math.round((Date.now() - stepStartedAt) / 1000));
     try {
-      await completeStep.mutateAsync({
+      const resp = await completeStep.mutateAsync({
         stepId: currentStep.id,
         data: { time_spent_seconds: seconds },
       });
-      // переход к следующему шагу
-      if (index + 1 < steps.length) {
-        setIndex(index + 1);
-        setStepStartedAt(Date.now());
-      } else {
-        toast.success("Урок пройден!");
-        // Возвращаемся назад: для standalone — к трекам, иначе — в курсе пользователь сам разберётся
-        router.push(context === "standalone" ? "/tracks" : "/dashboard");
-      }
+      // Триггерим XP/level-up/achievement/daily-goal toasts (legacy путь).
+      void fireGamificationFx(resp.gamification);
+      advance();
     } catch (e) {
-      // ApiClient уже выкидывает шапку с message; показываем тост
       console.error(e);
       toast.error("Не удалось сохранить прогресс");
     }
+  };
+
+  // Phase 2: интерактивный submit. Возвращает SubmitAnswerResponse — компонент
+  // сам покажет feedback и потом дёрнет onContinue → advance().
+  const handleInteractiveSubmit = async (answer: Record<string, unknown>) => {
+    if (!currentStep) throw new Error("no current step");
+    const timeMs = Math.max(0, Date.now() - stepStartedAt);
+    const resp = await submitStep.mutateAsync({
+      stepId: currentStep.id,
+      body: {
+        answer,
+        time_spent_ms: timeMs,
+        source_type: context,
+      },
+    });
+    // gamification side-effects уже сделаны на бэке; триггерим UI.
+    if (resp.is_correct) {
+      void fireGamificationFx(resp.gamification);
+    }
+    return resp;
   };
 
   const lesson = data.lesson;
@@ -235,35 +266,45 @@ export default function LessonPage() {
             <h2 className="text-2xl font-black">{currentStep.title}</h2>
           </div>
 
-          <StepBody step={currentStep} />
+          {isInteractiveStep(currentStep.type) ? (
+            <StepRenderer
+              step={currentStep}
+              onSubmit={handleInteractiveSubmit}
+              onContinue={advance}
+              isLast={index + 1 === steps.length}
+            />
+          ) : (
+            <>
+              <StepBody step={currentStep} />
+              <div className="flex items-center justify-between gap-3 pt-4">
+                <Button
+                  variant="outline"
+                  className="h-14 rounded-2xl border-4 font-bold px-6"
+                  disabled={index === 0}
+                  onClick={() => {
+                    setIndex(Math.max(0, index - 1));
+                    setStepStartedAt(Date.now());
+                  }}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />Назад
+                </Button>
 
-          <div className="flex items-center justify-between gap-3 pt-4">
-            <Button
-              variant="outline"
-              className="h-14 rounded-2xl border-4 font-bold px-6"
-              disabled={index === 0}
-              onClick={() => {
-                setIndex(Math.max(0, index - 1));
-                setStepStartedAt(Date.now());
-              }}
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />Назад
-            </Button>
-
-            <Button
-              onClick={handleComplete}
-              disabled={completeStep.isPending}
-              className="h-14 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 px-8 font-bold shadow-[0_4px_0_0_#46a302] active:translate-y-1 active:shadow-none transition-all gap-2"
-            >
-              {completeStep.isPending ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <CheckCircle2 className="w-5 h-5" />
-              )}
-              {index + 1 === steps.length ? "Завершить урок" : "Дальше"}
-              {index + 1 < steps.length && <ArrowRight className="w-4 h-4" />}
-            </Button>
-          </div>
+                <Button
+                  onClick={handleComplete}
+                  disabled={completeStep.isPending}
+                  className="h-14 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 px-8 font-bold shadow-[0_4px_0_0_#46a302] active:translate-y-1 active:shadow-none transition-all gap-2"
+                >
+                  {completeStep.isPending ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="w-5 h-5" />
+                  )}
+                  {index + 1 === steps.length ? "Завершить урок" : "Дальше"}
+                  {index + 1 < steps.length && <ArrowRight className="w-4 h-4" />}
+                </Button>
+              </div>
+            </>
+          )}
         </section>
       )}
     </div>

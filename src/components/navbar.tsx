@@ -12,7 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Home, BookOpen, LayoutDashboard, Languages, Flame, Heart, Zap, LogOut, User, Compass } from "lucide-react";
+import { Home, BookOpen, LayoutDashboard, Languages, Zap, LogOut, User, Compass, Trophy, BarChart3, Sparkles } from "lucide-react";
+import { GamificationTopbar } from "@/components/gamification";
 
 export function Navbar() {
   const { language, setLanguage, t } = useLanguage();
@@ -31,6 +32,7 @@ export function Navbar() {
     { to: "/", icon: Home, label: t("common.home") },
     { to: "/tracks", icon: Compass, label: t("common.tracks") },
     { to: "/courses", icon: BookOpen, label: t("common.courses") },
+    { to: "/practice", icon: Sparkles, label: t("common.practice") },
     { to: "/dashboard", icon: LayoutDashboard, label: t("common.dashboard") },
   ];
 
@@ -59,16 +61,14 @@ export function Navbar() {
 
         <div className="flex items-center gap-2 sm:gap-4">
           {isAuthenticated && (
-            <div className="flex items-center gap-4 mr-2 sm:mr-4">
-              <div className="flex items-center gap-1 text-orange-500 font-bold">
-                <Flame className="h-5 w-5 fill-current" />
-                <span>5</span>
+            <>
+              <div className="hidden sm:block mr-2 sm:mr-4">
+                <GamificationTopbar />
               </div>
-              <div className="flex items-center gap-1 text-red-500 font-bold">
-                <Heart className="h-5 w-5 fill-current" />
-                <span>3</span>
+              <div className="sm:hidden mr-2">
+                <GamificationTopbar compact />
               </div>
-            </div>
+            </>
           )}
 
           <Button
@@ -99,6 +99,24 @@ export function Navbar() {
                       <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer">
                         <LayoutDashboard className="h-4 w-4" />
                         Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
+                        <User className="h-4 w-4" />
+                        {t("common.profile")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile/achievements" className="flex items-center gap-2 cursor-pointer">
+                        <Trophy className="h-4 w-4" />
+                        {t("common.achievements")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile/stats" className="flex items-center gap-2 cursor-pointer">
+                        <BarChart3 className="h-4 w-4" />
+                        {t("common.stats")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
