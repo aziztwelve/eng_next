@@ -33,6 +33,7 @@ export function Navbar() {
     { to: "/tracks", icon: Compass, label: t("common.tracks") },
     { to: "/courses", icon: BookOpen, label: t("common.courses") },
     { to: "/practice", icon: Sparkles, label: t("common.practice") },
+    { to: "/leagues", icon: Trophy, label: t("common.leagues") },
     { to: "/dashboard", icon: LayoutDashboard, label: t("common.dashboard") },
   ];
 
