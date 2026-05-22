@@ -1,0 +1,22 @@
+// auth namespace — tg
+export const tgAuth = {
+  brand: 'LingoLearn',
+  signInTagline: 'Бо бозгашти шумо! Барои идомаи омӯзиш ворид шавед.',
+  signUpTagline: 'Барои оғози сафари забонии худ ҳисоб созед.',
+  cardSignInTitle: 'Воридшавӣ',
+  cardSignUpTitle: 'Сохтани ҳисоб',
+  cardSignInDesc: 'Барои ворид шудан ба ҳисоб маълумотро ворид кунед',
+  cardSignUpDesc: 'Барои оғоз кардан маълумотро пур кунед',
+  usernameLabel: 'Номи корбар',
+  usernamePlaceholder: 'Номи корбари шумо',
+  emailLabel: 'Email',
+  emailPlaceholder: 'you@example.com',
+  passwordLabel: 'Рамз',
+  passwordPlaceholder: '••••••••',
+  signInBtn: 'Ворид шудан',
+  signUpBtn: 'Сохтани ҳисоб',
+  switchToSignUpQ: 'Ҳисоб надоред?',
+  switchToSignUpLink: 'Бақайдгирӣ',
+  switchToSignInQ: 'Аллакай ҳисоб доред?',
+  switchToSignInLink: 'Ворид шудан',
+};

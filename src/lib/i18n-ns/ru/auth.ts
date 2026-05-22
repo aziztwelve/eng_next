@@ -1,0 +1,22 @@
+// auth namespace — ru
+export const ruAuth = {
+  brand: 'LingoLearn',
+  signInTagline: 'С возвращением! Войдите, чтобы продолжить обучение.',
+  signUpTagline: 'Создайте аккаунт, чтобы начать своё языковое путешествие.',
+  cardSignInTitle: 'Вход',
+  cardSignUpTitle: 'Создание аккаунта',
+  cardSignInDesc: 'Введите данные для входа в аккаунт',
+  cardSignUpDesc: 'Заполните данные, чтобы начать',
+  usernameLabel: 'Имя пользователя',
+  usernamePlaceholder: 'Ваше имя пользователя',
+  emailLabel: 'Email',
+  emailPlaceholder: 'you@example.com',
+  passwordLabel: 'Пароль',
+  passwordPlaceholder: '••••••••',
+  signInBtn: 'Войти',
+  signUpBtn: 'Создать аккаунт',
+  switchToSignUpQ: 'Нет аккаунта?',
+  switchToSignUpLink: 'Регистрация',
+  switchToSignInQ: 'Уже есть аккаунт?',
+  switchToSignInLink: 'Войти',
+};

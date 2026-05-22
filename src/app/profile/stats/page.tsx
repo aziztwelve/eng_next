@@ -106,7 +106,7 @@ export default function StatsPage() {
       </Card>
 
       <Card className="rounded-3xl border-4 p-6 space-y-4">
-        <h2 className="font-black text-lg">XP за 14 дней</h2>
+        <h2 className="font-black text-lg">{t('profile.stats.xpChart14days')}</h2>
         <div className="flex items-end justify-between gap-1 h-32">
           {byDay.map((d) => {
             const pct = (d.xp / maxBar) * 100;
@@ -129,15 +129,15 @@ export default function StatsPage() {
           })}
         </div>
         <div className="flex justify-between text-xs text-muted-foreground font-medium">
-          <span>Total: {stats?.total_xp ?? 0} XP</span>
-          <span>Weekly: {stats?.weekly_xp ?? 0} XP</span>
+          <span>{t('profile.stats.total')}: {stats?.total_xp ?? 0} XP</span>
+          <span>{t('profile.stats.weekly')}: {stats?.weekly_xp ?? 0} XP</span>
         </div>
       </Card>
 
       <Card className="rounded-3xl border-4 p-6 space-y-4">
-        <h2 className="font-black text-lg">XP история</h2>
+        <h2 className="font-black text-lg">{t('profile.stats.xpHistory')}</h2>
         {transactions.length === 0 && !xp.isLoading ? (
-          <p className="text-muted-foreground font-medium">Пока нет транзакций.</p>
+          <p className="text-muted-foreground font-medium">{t('profile.stats.noTransactions')}</p>
         ) : (
           <ul className="divide-y">
             {transactions.map((tx) => {
@@ -169,7 +169,7 @@ export default function StatsPage() {
             {xp.isFetchingNextPage ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              'Загрузить ещё'
+              t('profile.stats.loadMore')
             )}
           </Button>
         )}

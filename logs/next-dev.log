@@ -1,0 +1,137 @@
+
+> eng_next2@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.107:3000
+- Environments: .env.local
+✓ Ready in 572ms
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /home/aziz/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /home/aziz/Documents/startup/eng/eng_next2/package-lock.json
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+ GET / 200 in 849ms (next.js: 404ms, application-code: 445ms)
+ GET / 200 in 100ms (next.js: 7ms, application-code: 93ms)
+ GET /ai 200 in 137ms (next.js: 53ms, application-code: 84ms)
+ GET /practice 200 in 164ms (next.js: 57ms, application-code: 107ms)
+ GET /courses 200 in 86ms (next.js: 39ms, application-code: 47ms)
+ GET /tracks 200 in 85ms (next.js: 37ms, application-code: 48ms)
+ GET /ai 200 in 125ms (next.js: 4ms, application-code: 121ms)
+ GET /leagues 200 in 2.9s (next.js: 2.8s, application-code: 85ms)
+○ Compiling /leagues ...
+ GET /friends 200 in 2.1s (next.js: 2.1s, application-code: 58ms)
+ GET /leagues 200 in 66ms (next.js: 9ms, application-code: 57ms)
+ GET /ai 200 in 37ms (next.js: 5ms, application-code: 32ms)
+ GET /ai/chat 200 in 231ms (next.js: 89ms, application-code: 141ms)
+ GET / 200 in 116ms (next.js: 4ms, application-code: 112ms)
+ GET /ai/chat 200 in 84ms (next.js: 4ms, application-code: 79ms)
+ GET /auth 200 in 268ms (next.js: 223ms, application-code: 44ms)
+ GET /dashboard 200 in 296ms (next.js: 138ms, application-code: 158ms)
+ GET /dashboard 200 in 166ms (next.js: 5ms, application-code: 161ms)
+ GET /friends 200 in 59ms (next.js: 9ms, application-code: 50ms)
+ GET /dashboard 200 in 73ms (next.js: 6ms, application-code: 68ms)
+ GET /friends 200 in 44ms (next.js: 5ms, application-code: 39ms)
+ GET /leagues 200 in 53ms (next.js: 5ms, application-code: 48ms)
+[browser] Uncaught TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at LeaderboardRow (src/app/leagues/page.tsx:396:25)
+    at Leaderboard[entries.map()] (src/app/leagues/page.tsx:318:11)
+    at Array.map (<anonymous>)
+    at Leaderboard (src/app/leagues/page.tsx:317:17)
+    at LeaguesPage (src/app/leagues/page.tsx:123:7)
+  394 |
+  395 |       <div className="font-black tabular-nums">
+> 396 |         {entry.weekly_xp.toLocaleString('ru')}{' '}
+      |                         ^
+  397 |         <span className="text-xs text-muted-foreground font-bold">XP</span>
+  398 |       </div>
+  399 |     </li>
+ GET /dashboard 200 in 127ms (next.js: 6ms, application-code: 121ms)
+ GET /ai 200 in 57ms (next.js: 7ms, application-code: 50ms)
+ GET /practice 200 in 50ms (next.js: 7ms, application-code: 44ms)
+ GET /practice/session 200 in 125ms (next.js: 68ms, application-code: 57ms)
+ GET /courses 200 in 49ms (next.js: 6ms, application-code: 43ms)
+ GET /tracks 200 in 53ms (next.js: 6ms, application-code: 47ms)
+ GET /tracks/daily-english 200 in 2.1s (next.js: 1980ms, application-code: 125ms)
+ GET /lessons/a1111111-0001-0001-0001-000000000001 200 in 706ms (next.js: 634ms, application-code: 72ms)
+ GET /practice 200 in 51ms (next.js: 4ms, application-code: 47ms)
+ GET /practice/mistakes 200 in 1698ms (next.js: 1658ms, application-code: 40ms)
+ GET /practice 200 in 86ms (next.js: 14ms, application-code: 73ms)
+ GET /ai 200 in 79ms (next.js: 7ms, application-code: 72ms)
+ GET /tracks 200 in 87ms (next.js: 10ms, application-code: 77ms)
+ GET /tracks/daily-english 200 in 234ms (next.js: 175ms, application-code: 60ms)
+ GET /lessons/a1111111-0001-0001-0001-000000000001 200 in 249ms (next.js: 184ms, application-code: 65ms)
+ GET /tracks 200 in 57ms (next.js: 5ms, application-code: 53ms)
+ GET /tracks/english-stories-b1 200 in 493ms (next.js: 293ms, application-code: 200ms)
+ GET /lessons/a2222222-0002-0002-0002-000000000001 200 in 193ms (next.js: 151ms, application-code: 42ms)
+ GET /tracks 200 in 64ms (next.js: 8ms, application-code: 56ms)
+ GET /practice 200 in 165ms (next.js: 11ms, application-code: 153ms)
+ GET /ai 200 in 64ms (next.js: 6ms, application-code: 59ms)
+ GET /ai/chat 200 in 61ms (next.js: 7ms, application-code: 54ms)
+ GET /ai/chat/8e62ea30-9d66-401a-8596-a490e931d1d6 200 in 980ms (next.js: 878ms, application-code: 101ms)
+ GET /ai/chat 200 in 59ms (next.js: 6ms, application-code: 53ms)
+ GET /ai 200 in 33ms (next.js: 3ms, application-code: 30ms)
+ GET /ai/roleplay 200 in 270ms (next.js: 144ms, application-code: 126ms)
+ GET /ai/chat/0b499e5a-7722-45e0-a2a2-5d4d1d0b234a 200 in 217ms (next.js: 178ms, application-code: 39ms)
+ GET /ai/chat 200 in 122ms (next.js: 17ms, application-code: 105ms)
+ GET /ai 200 in 47ms (next.js: 5ms, application-code: 43ms)
+ GET /ai/tutor 200 in 108ms (next.js: 51ms, application-code: 57ms)
+ GET /ai 200 in 123ms (next.js: 9ms, application-code: 114ms)
+ GET /ai/pronunciation 200 in 89ms (next.js: 38ms, application-code: 51ms)
+ GET /ai 200 in 162ms (next.js: 10ms, application-code: 152ms)
+ GET /ai/chat 200 in 58ms (next.js: 5ms, application-code: 53ms)
+ GET /ai 200 in 46ms (next.js: 4ms, application-code: 42ms)
+ GET /ai/writing 200 in 277ms (next.js: 217ms, application-code: 60ms)
+ GET /ai 200 in 88ms (next.js: 5ms, application-code: 83ms)
+ GET /ai 200 in 46ms (next.js: 14ms, application-code: 32ms)
+ GET /ai 200 in 104ms (next.js: 18ms, application-code: 86ms)
+ GET /leagues 200 in 30ms (next.js: 6ms, application-code: 24ms)
+[browser] Uncaught TypeError: Cannot read properties of undefined (reading 'toLocaleString')
+    at LeaderboardRow (src/app/leagues/page.tsx:396:25)
+    at Leaderboard[entries.map()] (src/app/leagues/page.tsx:318:11)
+    at Array.map (<anonymous>)
+    at Leaderboard (src/app/leagues/page.tsx:317:17)
+    at LeaguesPage (src/app/leagues/page.tsx:123:7)
+  394 |
+  395 |       <div className="font-black tabular-nums">
+> 396 |         {entry.weekly_xp.toLocaleString('ru')}{' '}
+      |                         ^
+  397 |         <span className="text-xs text-muted-foreground font-bold">XP</span>
+  398 |       </div>
+  399 |     </li>
+ GET /ai 200 in 146ms (next.js: 6ms, application-code: 140ms)
+ GET /friends 200 in 41ms (next.js: 5ms, application-code: 36ms)
+ GET /friends 200 in 67ms (next.js: 6ms, application-code: 60ms)
+ GET /dashboard 200 in 118ms (next.js: 13ms, application-code: 105ms)
+ GET /profile 200 in 410ms (next.js: 234ms, application-code: 176ms)
+ GET /profile/achievements 200 in 104ms (next.js: 56ms, application-code: 48ms)
+ GET /profile 200 in 114ms (next.js: 12ms, application-code: 102ms)
+ GET /profile/stats 200 in 503ms (next.js: 392ms, application-code: 111ms)
+ GET /courses 200 in 78ms (next.js: 18ms, application-code: 60ms)
+ GET /tracks 200 in 72ms (next.js: 8ms, application-code: 65ms)
+✓ Compiled in 8.7s
+⚠ Fast Refresh had to perform a full reload when ./Documents/startup/eng/eng_next2/src/lib/i18n.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /tracks 200 in 889ms (next.js: 525ms, application-code: 364ms)
+ GET /tracks 200 in 884ms (next.js: 666ms, application-code: 218ms)
+ GET /tracks 200 in 142ms (next.js: 21ms, application-code: 121ms)
+ GET /tracks 200 in 1058ms (next.js: 11ms, application-code: 1047ms)
+ GET /tracks/daily-english 200 in 648ms (next.js: 405ms, application-code: 243ms)
+ GET /lessons/a1111111-0001-0001-0001-000000000001 200 in 547ms (next.js: 315ms, application-code: 232ms)
+ GET /tracks 200 in 35ms (next.js: 6ms, application-code: 29ms)
+ GET /ai 200 in 91ms (next.js: 31ms, application-code: 60ms)
+ GET /ai/chat 200 in 216ms (next.js: 107ms, application-code: 109ms)
+ GET /ai/chat/0b499e5a-7722-45e0-a2a2-5d4d1d0b234a 200 in 417ms (next.js: 298ms, application-code: 119ms)
+ GET /ai/chat 200 in 68ms (next.js: 8ms, application-code: 60ms)
+ GET /ai/chat/2c538f92-9218-4e87-931e-d5c3bdeba4a5 200 in 417ms (next.js: 265ms, application-code: 152ms)
+ GET /ai/chat 200 in 31ms (next.js: 3ms, application-code: 28ms)
+ GET /ai/chat/8e62ea30-9d66-401a-8596-a490e931d1d6 200 in 283ms (next.js: 236ms, application-code: 47ms)
+ GET /ai 200 in 65ms (next.js: 5ms, application-code: 60ms)
+ GET /friends 200 in 71ms (next.js: 30ms, application-code: 40ms)
+ GET /practice 200 in 283ms (next.js: 154ms, application-code: 130ms)
+ GET /dashboard 200 in 235ms (next.js: 89ms, application-code: 146ms)
+ GET /profile 200 in 506ms (next.js: 377ms, application-code: 129ms)

@@ -39,10 +39,10 @@ export default function ProfilePage() {
       </div>
 
       <Card className="rounded-3xl border-4 p-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Stat icon={<Star className="h-5 w-5 text-amber-500 fill-current" />} label="Level" value={stats?.level ?? '—'} />
-        <Stat icon={<Zap className="h-5 w-5 text-amber-500 fill-current" />} label="Total XP" value={stats?.total_xp ?? 0} />
-        <Stat icon={<Flame className="h-5 w-5 text-orange-500 fill-current" />} label="Streak" value={stats?.current_streak ?? 0} />
-        <Stat icon={<Heart className="h-5 w-5 text-red-500 fill-current" />} label="Hearts" value={`${stats?.hearts ?? 0}/${stats?.max_hearts ?? 0}`} />
+        <Stat icon={<Star className="h-5 w-5 text-amber-500 fill-current" />} label={t('profile.index.statLevel')} value={stats?.level ?? '—'} />
+        <Stat icon={<Zap className="h-5 w-5 text-amber-500 fill-current" />} label={t('profile.index.statTotalXp')} value={stats?.total_xp ?? 0} />
+        <Stat icon={<Flame className="h-5 w-5 text-orange-500 fill-current" />} label={t('profile.index.statStreak')} value={stats?.current_streak ?? 0} />
+        <Stat icon={<Heart className="h-5 w-5 text-red-500 fill-current" />} label={t('profile.index.statHearts')} value={`${stats?.hearts ?? 0}/${stats?.max_hearts ?? 0}`} />
       </Card>
 
       <Card className="rounded-3xl border-4 p-6 grid sm:grid-cols-[auto_1fr] gap-6 items-center">
@@ -63,13 +63,13 @@ export default function ProfilePage() {
           <Button asChild variant="outline" className="rounded-xl border-2 font-bold">
             <Link href="/profile/achievements">
               <Award className="h-4 w-4 mr-2" />
-              Все
+              {t('profile.index.seeAll')}
             </Link>
           </Button>
         </div>
         {recent.length === 0 ? (
           <p className="text-muted-foreground font-medium">
-            {isLoading ? '…' : 'Пока ни одного достижения. Завершите первый шаг!'}
+            {isLoading ? t('profile.index.loading') : t('profile.index.noAchievementsYet')}
           </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -102,13 +102,13 @@ export default function ProfilePage() {
         <Button asChild variant="outline" className="rounded-2xl border-4 h-14 font-bold">
           <Link href="/profile/strength">
             <Layers className="h-4 w-4 mr-2" />
-            Сила навыков
+            {t('profile.index.skillStrength')}
           </Link>
         </Button>
         <Button asChild variant="outline" className="rounded-2xl border-4 h-14 font-bold">
           <Link href="/profile/notifications">
             <Bell className="h-4 w-4 mr-2" />
-            Уведомления
+            {t('profile.index.notifications')}
           </Link>
         </Button>
       </section>

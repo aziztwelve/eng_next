@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useLeagueHistory, useLeaguesCatalog } from '@/hooks/use-leagues';
 import { tsToDate } from '@/lib/gamification-api';
+import { useLanguage } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import type { League, LeagueHistoryEntry } from '@/types/api';
 
@@ -29,6 +30,7 @@ const PAGE_SIZE = 20;
  * promotion/demotion флаги и заработанные gems.
  */
 export default function LeagueHistoryPage() {
+  const { t } = useLanguage();
   const [offset, setOffset] = useState(0);
 
   const history = useLeagueHistory({ limit: PAGE_SIZE, offset });
@@ -52,16 +54,16 @@ export default function LeagueHistoryPage() {
             className="rounded-xl -ml-2 mb-2 h-8 px-3 text-muted-foreground"
           >
             <Link href="/leagues">
-              <ArrowLeft className="h-4 w-4 mr-1" />К лигам
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              {t('leagues.history.backToLeagues')}
             </Link>
           </Button>
           <h1 className="text-3xl sm:text-4xl font-black flex items-center gap-3">
             <History className="h-8 w-8 text-primary" />
-            История лиг
+            {t('leagues.history.title')}
           </h1>
           <p className="text-muted-foreground font-medium mt-2">
-            Все ваши еженедельные итоги: финальное место, заработанные XP и
-            gems, переходы между лигами.
+            {t('leagues.history.subtitle')}
           </p>
         </div>
       </div>
@@ -73,9 +75,9 @@ export default function LeagueHistoryPage() {
       ) : entries.length === 0 ? (
         <Card className="rounded-3xl border-4 p-8 text-center space-y-2">
           <History className="h-10 w-10 mx-auto text-muted-foreground" />
-          <h2 className="text-xl font-black">Истории пока нет</h2>
+          <h2 className="text-xl font-black">{t('leagues.history.emptyTitle')}</h2>
           <p className="text-muted-foreground font-medium">
-            Завершите первый еженедельный цикл, и итог появится здесь.
+            {t('leagues.history.emptyText')}
           </p>
         </Card>
       ) : (
@@ -113,9 +115,13 @@ function HistoryRow({
   entry: LeagueHistoryEntry;
   league?: League;
 }) {
+  const { t, language } = useLanguage();
   const accent = league?.color || '#94a3b8';
   const startDate = tsToDate(entry.cycle_start_at);
   const endDate = tsToDate(entry.cycle_end_at);
+
+  const leagueName =
+    league?.name ?? t('leagues.history.leagueFallback').replace('{id}', String(entry.league_id));
 
   return (
     <li>
@@ -139,20 +145,20 @@ function HistoryRow({
 
           <div className="flex-1 min-w-0">
             <div className="font-black text-lg flex items-center gap-2 flex-wrap">
-              {league?.name ?? `League ${entry.league_id}`}
+              {leagueName}
               <Outcome
                 promoted={entry.promoted}
                 demoted={entry.demoted}
               />
             </div>
             <div className="text-xs text-muted-foreground font-medium mt-0.5">
-              {formatPeriod(startDate, endDate)}
+              {formatPeriod(startDate, endDate, language)}
             </div>
           </div>
 
           <div className="text-right space-y-1 shrink-0">
             <div className="font-black tabular-nums text-base">
-              {entry.final_xp.toLocaleString('ru')}{' '}
+              {entry.final_xp.toLocaleString(language === 'en' ? 'en' : 'ru')}{' '}
               <span className="text-xs text-muted-foreground font-bold">
                 XP
               </span>
@@ -176,11 +182,12 @@ function Outcome({
   promoted: boolean;
   demoted: boolean;
 }) {
+  const { t } = useLanguage();
   if (promoted) {
     return (
       <Badge className="rounded-lg bg-emerald-500 text-white font-bold gap-1">
         <ArrowUp className="h-3 w-3" />
-        Промо
+        {t('leagues.history.outcomePromoted')}
       </Badge>
     );
   }
@@ -188,7 +195,7 @@ function Outcome({
     return (
       <Badge className="rounded-lg bg-rose-500 text-white font-bold gap-1">
         <ArrowDown className="h-3 w-3" />
-        Демо
+        {t('leagues.history.outcomeDemoted')}
       </Badge>
     );
   }
@@ -198,14 +205,14 @@ function Outcome({
       className="rounded-lg font-bold text-muted-foreground gap-1 border-2"
     >
       <Minus className="h-3 w-3" />
-      Остались
+      {t('leagues.history.outcomeStayed')}
     </Badge>
   );
 }
 
-function formatPeriod(start: Date | null, end: Date | null): string {
+function formatPeriod(start: Date | null, end: Date | null, lang: string): string {
   if (!start || !end) return '';
-  const fmt = new Intl.DateTimeFormat('ru', {
+  const fmt = new Intl.DateTimeFormat(lang === 'en' ? 'en' : 'ru', {
     day: 'numeric',
     month: 'short',
   });
@@ -228,6 +235,7 @@ function Pagination({
   pageSize: number;
   onChange: (next: number) => void;
 }) {
+  const { t } = useLanguage();
   const page = Math.floor(offset / pageSize) + 1;
   const pages = Math.max(1, Math.ceil(total / pageSize));
   const canPrev = offset > 0;
@@ -241,10 +249,12 @@ function Pagination({
         disabled={!canPrev}
         onClick={() => onChange(Math.max(0, offset - pageSize))}
       >
-        ← Назад
+        {t('leagues.history.pagePrev')}
       </Button>
       <div className="text-sm font-medium text-muted-foreground tabular-nums">
-        Страница {page} из {pages}
+        {t('leagues.history.pageInfo')
+          .replace('{page}', String(page))
+          .replace('{total}', String(pages))}
       </div>
       <Button
         variant="outline"
@@ -252,7 +262,7 @@ function Pagination({
         disabled={!canNext}
         onClick={() => onChange(offset + pageSize)}
       >
-        Вперёд →
+        {t('leagues.history.pageNext')}
       </Button>
     </div>
   );

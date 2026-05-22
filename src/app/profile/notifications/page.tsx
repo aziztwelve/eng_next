@@ -17,6 +17,7 @@ import {
   usePushSubscription,
 } from '@/hooks/use-notifications';
 import { tsToDate } from '@/lib/gamification-api';
+import { useLanguage } from '@/lib/i18n';
 import { platformToShort, type DeviceToken, type UpdatePreferencesRequest } from '@/types/api';
 
 /**
@@ -33,6 +34,7 @@ import { platformToShort, type DeviceToken, type UpdatePreferencesRequest } from
  * после render'а; сохранение — явной кнопкой «Сохранить».
  */
 export default function NotificationsSettingsPage() {
+  const { t } = useLanguage();
   const prefs = useNotificationPreferences();
   const devices = useNotificationDevices();
   const updatePrefs = useUpdateNotificationPreferences();
@@ -52,6 +54,7 @@ export default function NotificationsSettingsPage() {
       streak_risk_enabled: p.streak_risk_enabled,
       daily_goal_enabled: p.daily_goal_enabled,
       achievement_enabled: p.achievement_enabled,
+      friend_request_enabled: p.friend_request_enabled,
       quiet_hours_start: p.quiet_hours_start,
       quiet_hours_end: p.quiet_hours_end,
       timezone: p.timezone ?? '',
@@ -66,6 +69,7 @@ export default function NotificationsSettingsPage() {
       form.streak_risk_enabled !== p.streak_risk_enabled ||
       form.daily_goal_enabled !== p.daily_goal_enabled ||
       form.achievement_enabled !== p.achievement_enabled ||
+      form.friend_request_enabled !== p.friend_request_enabled ||
       form.quiet_hours_start !== p.quiet_hours_start ||
       form.quiet_hours_end !== p.quiet_hours_end ||
       (form.timezone ?? '') !== (p.timezone ?? '')
@@ -76,19 +80,19 @@ export default function NotificationsSettingsPage() {
     if (!form) return;
     try {
       await updatePrefs.mutateAsync(form);
-      toast.success('Настройки сохранены');
+      toast.success(t('notifications.page.saveSuccess'));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Не удалось сохранить');
+      toast.error(err instanceof Error ? err.message : t('notifications.page.saveFail'));
     }
   };
 
   const onSubscribe = async () => {
     try {
       await push.subscribeAsync();
-      toast.success('Push-уведомления включены в этом браузере');
+      toast.success(t('notifications.page.subscribeSuccess'));
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : 'Не удалось подписаться на push',
+        err instanceof Error ? err.message : t('notifications.page.subscribeFail'),
       );
     }
   };
@@ -98,9 +102,9 @@ export default function NotificationsSettingsPage() {
       // device_id неизвестен — браузер отпишется локально, бэк revoke'нёт
       // на следующей неудачной доставке.
       await push.unsubscribeAsync(undefined);
-      toast.success('Push-уведомления отключены в этом браузере');
+      toast.success(t('notifications.page.unsubscribeSuccess'));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Не удалось отписаться');
+      toast.error(err instanceof Error ? err.message : t('notifications.page.unsubscribeFail'));
     }
   };
 
@@ -109,13 +113,13 @@ export default function NotificationsSettingsPage() {
       <Button asChild variant="ghost" className="rounded-xl font-bold w-fit">
         <Link href="/profile">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          К профилю
+          {t('notifications.page.backToProfile')}
         </Link>
       </Button>
 
       <h1 className="text-3xl sm:text-4xl font-black flex items-center gap-3">
         <Bell className="w-7 h-7" />
-        Уведомления
+        {t('notifications.page.title')}
       </h1>
 
       {/* === Browser subscription === */}
@@ -133,38 +137,46 @@ export default function NotificationsSettingsPage() {
 
       {/* === Channels === */}
       <Card className="rounded-3xl border-4 p-6 space-y-5">
-        <h2 className="font-black text-xl">Каналы</h2>
+        <h2 className="font-black text-xl">{t('notifications.channels.title')}</h2>
         {prefs.isLoading || !form ? (
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Loader2 className="w-4 h-4 animate-spin" /> Загружаем…
+            <Loader2 className="w-4 h-4 animate-spin" /> {t('notifications.page.loading')}
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-3">
             <ChannelToggle
-              label="Practice reminder"
-              hint="«Карточки ждут» — раз в день в local hour"
+              label={t('notifications.channels.practiceLabel')}
+              hint={t('notifications.channels.practiceHint')}
               checked={form.practice_reminder_enabled}
               onChange={(v) =>
                 setForm((f) => f && { ...f, practice_reminder_enabled: v })
               }
             />
             <ChannelToggle
-              label="Streak risk"
-              hint="Вечером, если streak не сохранён"
+              label={t('notifications.channels.streakLabel')}
+              hint={t('notifications.channels.streakHint')}
               checked={form.streak_risk_enabled}
               onChange={(v) => setForm((f) => f && { ...f, streak_risk_enabled: v })}
             />
             <ChannelToggle
-              label="Daily goal"
-              hint="До полуночи, если цель не выполнена"
+              label={t('notifications.channels.dailyGoalLabel')}
+              hint={t('notifications.channels.dailyGoalHint')}
               checked={form.daily_goal_enabled}
               onChange={(v) => setForm((f) => f && { ...f, daily_goal_enabled: v })}
             />
             <ChannelToggle
-              label="Achievements"
-              hint="Когда разблокирована ачивка"
+              label={t('notifications.channels.achievementLabel')}
+              hint={t('notifications.channels.achievementHint')}
               checked={form.achievement_enabled}
               onChange={(v) => setForm((f) => f && { ...f, achievement_enabled: v })}
+            />
+            <ChannelToggle
+              label={t('notifications.channels.friendRequestLabel')}
+              hint={t('notifications.channels.friendRequestHint')}
+              checked={form.friend_request_enabled}
+              onChange={(v) =>
+                setForm((f) => f && { ...f, friend_request_enabled: v })
+              }
             />
           </div>
         )}
@@ -173,25 +185,24 @@ export default function NotificationsSettingsPage() {
       {/* === Quiet hours === */}
       <Card className="rounded-3xl border-4 p-6 space-y-4">
         <div>
-          <h2 className="font-black text-xl">Тихие часы</h2>
+          <h2 className="font-black text-xl">{t('notifications.quiet.title')}</h2>
           <p className="text-sm text-muted-foreground">
-            Окно тишины в локальном времени (0..23). Если start == end —
-            окно отключено.
+            {t('notifications.quiet.subtitle')}
           </p>
         </div>
         {prefs.isLoading || !form ? (
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Loader2 className="w-4 h-4 animate-spin" /> Загружаем…
+            <Loader2 className="w-4 h-4 animate-spin" /> {t('notifications.page.loading')}
           </div>
         ) : (
           <div className="flex flex-wrap items-end gap-4">
             <HourInput
-              label="Начало"
+              label={t('notifications.quiet.startLabel')}
               value={form.quiet_hours_start}
               onChange={(v) => setForm((f) => f && { ...f, quiet_hours_start: v })}
             />
             <HourInput
-              label="Конец"
+              label={t('notifications.quiet.endLabel')}
               value={form.quiet_hours_end}
               onChange={(v) => setForm((f) => f && { ...f, quiet_hours_end: v })}
             />
@@ -208,23 +219,23 @@ export default function NotificationsSettingsPage() {
         >
           {updatePrefs.isPending ? (
             <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Сохраняем…
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t('notifications.page.saving')}
             </>
           ) : (
-            'Сохранить'
+            t('notifications.page.save')
           )}
         </Button>
       </div>
 
       {/* === Devices === */}
       <Card className="rounded-3xl border-4 p-6 space-y-4">
-        <h2 className="font-black text-xl">Устройства</h2>
+        <h2 className="font-black text-xl">{t('notifications.devices.title')}</h2>
         {devices.isLoading ? (
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Loader2 className="w-4 h-4 animate-spin" /> Загружаем…
+            <Loader2 className="w-4 h-4 animate-spin" /> {t('notifications.page.loading')}
           </div>
         ) : (devices.data?.devices ?? []).length === 0 ? (
-          <p className="text-muted-foreground">Пока нет зарегистрированных устройств.</p>
+          <p className="text-muted-foreground">{t('notifications.devices.empty')}</p>
         ) : (
           <ul className="space-y-2">
             {(devices.data?.devices ?? []).map((d) => (
@@ -250,11 +261,12 @@ function PushSupportCard(props: {
   onSubscribe: () => void;
   onUnsubscribe: () => void;
 }) {
+  const { t } = useLanguage();
   if (!props.ready) {
     return (
       <Card className="rounded-3xl border-4 p-6">
         <div className="flex items-center gap-2 text-muted-foreground">
-          <Loader2 className="w-4 h-4 animate-spin" /> Проверяем поддержку пушей…
+          <Loader2 className="w-4 h-4 animate-spin" /> {t('notifications.push.checking')}
         </div>
       </Card>
     );
@@ -264,11 +276,10 @@ function PushSupportCard(props: {
     return (
       <Card className="rounded-3xl border-4 p-6 space-y-2">
         <h2 className="font-black text-xl flex items-center gap-2">
-          <BellOff className="w-5 h-5" /> Push не поддерживается
+          <BellOff className="w-5 h-5" /> {t('notifications.push.unsupportedTitle')}
         </h2>
         <p className="text-sm text-muted-foreground">
-          Ваш браузер не поддерживает Web Push. Включите уведомления в
-          мобильном приложении.
+          {t('notifications.push.unsupportedText')}
         </p>
       </Card>
     );
@@ -278,11 +289,10 @@ function PushSupportCard(props: {
     return (
       <Card className="rounded-3xl border-4 p-6 space-y-2">
         <h2 className="font-black text-xl flex items-center gap-2">
-          <ShieldAlert className="w-5 h-5" /> Push не сконфигурирован
+          <ShieldAlert className="w-5 h-5" /> {t('notifications.push.noVapidTitle')}
         </h2>
         <p className="text-sm text-muted-foreground">
-          На сервере не задан <code>VAPID_PUBLIC_KEY</code> — попросите
-          администратора настроить notifications-service.
+          {t('notifications.push.noVapidText')}
         </p>
       </Card>
     );
@@ -292,11 +302,10 @@ function PushSupportCard(props: {
     return (
       <Card className="rounded-3xl border-4 p-6 space-y-2">
         <h2 className="font-black text-xl flex items-center gap-2">
-          <BellOff className="w-5 h-5" /> Уведомления заблокированы
+          <BellOff className="w-5 h-5" /> {t('notifications.push.deniedTitle')}
         </h2>
         <p className="text-sm text-muted-foreground">
-          Разрешите уведомления для этого сайта в настройках браузера, чтобы
-          получать пуши.
+          {t('notifications.push.deniedText')}
         </p>
       </Card>
     );
@@ -306,11 +315,10 @@ function PushSupportCard(props: {
     return (
       <Card className="rounded-3xl border-4 p-6 space-y-3">
         <h2 className="font-black text-xl flex items-center gap-2">
-          <Bell className="w-5 h-5" /> Этот браузер подписан
+          <Bell className="w-5 h-5" /> {t('notifications.push.subscribedTitle')}
         </h2>
         <p className="text-sm text-muted-foreground">
-          Пуши будут приходить в этом браузере. Можно отписаться — а
-          подписаться можно в любой момент снова.
+          {t('notifications.push.subscribedText')}
         </p>
         <Button
           variant="outline"
@@ -320,10 +328,10 @@ function PushSupportCard(props: {
         >
           {props.isUnsubscribing ? (
             <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Отписываем…
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t('notifications.push.unsubscribing')}
             </>
           ) : (
-            'Отписаться в этом браузере'
+            t('notifications.push.unsubscribeBtn')
           )}
         </Button>
       </Card>
@@ -333,11 +341,10 @@ function PushSupportCard(props: {
   return (
     <Card className="rounded-3xl border-4 p-6 space-y-3">
       <h2 className="font-black text-xl flex items-center gap-2">
-        <Bell className="w-5 h-5" /> Включить push в этом браузере
+        <Bell className="w-5 h-5" /> {t('notifications.push.enableTitle')}
       </h2>
       <p className="text-sm text-muted-foreground">
-        Получайте напоминания о ревью, streak и ачивках. Без пушей
-        каналы выше работать не будут на этом устройстве.
+        {t('notifications.push.enableText')}
       </p>
       {props.error ? (
         <p className="text-sm text-destructive">{props.error}</p>
@@ -349,10 +356,10 @@ function PushSupportCard(props: {
       >
         {props.isSubscribing ? (
           <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Подписываем…
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t('notifications.push.subscribing')}
           </>
         ) : (
-          'Включить уведомления'
+          t('notifications.push.enableBtn')
         )}
       </Button>
     </Card>
@@ -408,6 +415,7 @@ function HourInput(props: {
 }
 
 function DeviceRow(props: { device: DeviceToken; onUnsubscribed: () => void }) {
+  const { t } = useLanguage();
   const { device } = props;
   const platform = platformToShort(device.platform) ?? 'unknown';
   const created = tsToDate(device.created_at);
@@ -421,15 +429,15 @@ function DeviceRow(props: { device: DeviceToken; onUnsubscribed: () => void }) {
           <div className="font-bold capitalize flex items-center gap-2">
             {platform}
             {device.revoked_at ? (
-              <Badge variant="outline" className="text-xs">revoked</Badge>
+              <Badge variant="outline" className="text-xs">{t('notifications.devices.revoked')}</Badge>
             ) : null}
           </div>
           <div className="text-xs text-muted-foreground">
             {device.user_agent || device.endpoint || device.token.slice(0, 32) + '…'}
           </div>
           <div className="text-xs text-muted-foreground">
-            {created ? `Создано ${created.toLocaleDateString()}` : null}
-            {lastSeen ? ` • Активность ${lastSeen.toLocaleDateString()}` : null}
+            {created ? t('notifications.devices.createdAt').replace('{date}', created.toLocaleDateString()) : null}
+            {lastSeen ? t('notifications.devices.lastSeenAt').replace('{date}', lastSeen.toLocaleDateString()) : null}
           </div>
         </div>
       </div>

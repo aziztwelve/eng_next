@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLanguage } from "@/lib/i18n";
+import { useLanguage, LANGUAGES, type Language } from "@/lib/i18n";
 import { useIsAuthenticated, useLogout } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,17 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Home, BookOpen, LayoutDashboard, Languages, Zap, LogOut, User, Compass, Trophy, BarChart3, Sparkles } from "lucide-react";
+import { Home, BookOpen, LayoutDashboard, Languages, Zap, LogOut, User, Compass, Trophy, BarChart3, Sparkles, Bot, Users, Check } from "lucide-react";
 import { GamificationTopbar } from "@/components/gamification";
 
 export function Navbar() {
   const { language, setLanguage, t } = useLanguage();
   const { isAuthenticated, isLoading } = useIsAuthenticated();
   const logoutMutation = useLogout();
-
-  const toggleLanguage = () => {
-    setLanguage(language === "ru" ? "en" : "ru");
-  };
 
   const handleSignOut = () => {
     logoutMutation.mutate();
@@ -33,7 +29,9 @@ export function Navbar() {
     { to: "/tracks", icon: Compass, label: t("common.tracks") },
     { to: "/courses", icon: BookOpen, label: t("common.courses") },
     { to: "/practice", icon: Sparkles, label: t("common.practice") },
+    { to: "/ai", icon: Bot, label: t("common.ai") },
     { to: "/leagues", icon: Trophy, label: t("common.leagues") },
+    { to: "/friends", icon: Users, label: t("common.friends") },
     { to: "/dashboard", icon: LayoutDashboard, label: t("common.dashboard") },
   ];
 
@@ -72,15 +70,30 @@ export function Navbar() {
             </>
           )}
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleLanguage}
-            className="rounded-xl border-2 hover:bg-accent/50 gap-2"
-          >
-            <Languages className="h-4 w-4" />
-            <span className="uppercase font-bold">{language}</span>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-xl border-2 hover:bg-accent/50 gap-2"
+              >
+                <Languages className="h-4 w-4" />
+                <span className="uppercase font-bold">{language}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44">
+              {LANGUAGES.map((lang) => (
+                <DropdownMenuItem
+                  key={lang.code}
+                  onClick={() => setLanguage(lang.code as Language)}
+                  className="cursor-pointer flex items-center justify-between gap-2"
+                >
+                  <span>{lang.nativeLabel}</span>
+                  {language === lang.code && <Check className="h-4 w-4 text-primary" />}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {!isLoading && (
             <>

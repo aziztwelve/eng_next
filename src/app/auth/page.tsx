@@ -1,17 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useLogin, useRegister } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Zap, Mail, Lock, User, Loader2 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
+/**
+ * AuthForm использует `useSearchParams()` через `useLogin/useRegister`
+ * (для чтения `?redirect=`), поэтому весь компонент обязан жить под
+ * `<Suspense>` — иначе Next.js 16 не сможет prerender'ить `/auth` в build'е
+ * (CSR-bailout error).
+ */
 export default function AuthPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      }
+    >
+      <AuthForm />
+    </Suspense>
+  );
+}
+
+function AuthForm() {
+  const { t } = useLanguage();
   const loginMutation = useLogin();
   const registerMutation = useRegister();
-  
+
   const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,11 +59,9 @@ export default function AuthPage() {
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-[0_6px_0_0_rgba(0,0,0,0.2)]">
             <Zap className="h-10 w-10 fill-current" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">LingoLearn</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("auth.brand")}</h1>
           <p className="text-muted-foreground text-center">
-            {flow === "signIn" 
-              ? "Welcome back! Sign in to continue learning." 
-              : "Create an account to start your language journey."}
+            {flow === "signIn" ? t("auth.signInTagline") : t("auth.signUpTagline")}
           </p>
         </div>
 
@@ -49,12 +69,10 @@ export default function AuthPage() {
         <Card className="border-2 border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-2xl font-bold text-center">
-              {flow === "signIn" ? "Sign In" : "Create Account"}
+              {flow === "signIn" ? t("auth.cardSignInTitle") : t("auth.cardSignUpTitle")}
             </CardTitle>
             <CardDescription className="text-center">
-              {flow === "signIn" 
-                ? "Enter your credentials to access your account" 
-                : "Fill in your details to get started"}
+              {flow === "signIn" ? t("auth.cardSignInDesc") : t("auth.cardSignUpDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -62,14 +80,14 @@ export default function AuthPage() {
               {flow === "signUp" && (
                 <div className="space-y-2">
                   <Label htmlFor="username" className="text-sm font-medium">
-                    Username
+                    {t("auth.usernameLabel")}
                   </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="username"
                       type="text"
-                      placeholder="Your username"
+                      placeholder={t("auth.usernamePlaceholder")}
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       className="pl-10 h-12 rounded-xl border-2 bg-background/50 focus:border-primary"
@@ -81,14 +99,14 @@ export default function AuthPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">
-                  Email
+                  {t("auth.emailLabel")}
                 </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder={t("auth.emailPlaceholder")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 h-12 rounded-xl border-2 bg-background/50 focus:border-primary"
@@ -99,14 +117,14 @@ export default function AuthPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-medium">
-                  Password
+                  {t("auth.passwordLabel")}
                 </Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder={t("auth.passwordPlaceholder")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 h-12 rounded-xl border-2 bg-background/50 focus:border-primary"
@@ -124,9 +142,9 @@ export default function AuthPage() {
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : flow === "signIn" ? (
-                  "Sign In"
+                  t("auth.signInBtn")
                 ) : (
-                  "Create Account"
+                  t("auth.signUpBtn")
                 )}
               </Button>
             </form>
@@ -139,13 +157,13 @@ export default function AuthPage() {
               >
                 {flow === "signIn" ? (
                   <>
-                    Don't have an account?{" "}
-                    <span className="font-semibold text-primary">Sign up</span>
+                    {t("auth.switchToSignUpQ")}{" "}
+                    <span className="font-semibold text-primary">{t("auth.switchToSignUpLink")}</span>
                   </>
                 ) : (
                   <>
-                    Already have an account?{" "}
-                    <span className="font-semibold text-primary">Sign in</span>
+                    {t("auth.switchToSignInQ")}{" "}
+                    <span className="font-semibold text-primary">{t("auth.switchToSignInLink")}</span>
                   </>
                 )}
               </button>

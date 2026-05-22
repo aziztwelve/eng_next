@@ -1,0 +1,22 @@
+// auth namespace — uz
+export const uzAuth = {
+  brand: 'LingoLearn',
+  signInTagline: 'Xush qaytib keldingiz! Oʻqishni davom ettirish uchun kiring.',
+  signUpTagline: 'Til sayohatingizni boshlash uchun hisob yarating.',
+  cardSignInTitle: 'Kirish',
+  cardSignUpTitle: 'Hisob yaratish',
+  cardSignInDesc: 'Hisobingizga kirish uchun maʼlumotlarni kiriting',
+  cardSignUpDesc: 'Boshlash uchun maʼlumotlarni toʻldiring',
+  usernameLabel: 'Foydalanuvchi nomi',
+  usernamePlaceholder: 'Foydalanuvchi nomingiz',
+  emailLabel: 'Email',
+  emailPlaceholder: 'you@example.com',
+  passwordLabel: 'Parol',
+  passwordPlaceholder: '••••••••',
+  signInBtn: 'Kirish',
+  signUpBtn: 'Hisob yaratish',
+  switchToSignUpQ: 'Hisobingiz yoʻqmi?',
+  switchToSignUpLink: 'Roʻyxatdan oʻtish',
+  switchToSignInQ: 'Allaqachon hisobingiz bormi?',
+  switchToSignInLink: 'Kirish',
+};

@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSkillStrengths, useWeakSkills } from '@/hooks/use-srs';
 import { tsToDate } from '@/lib/gamification-api';
+import { useLanguage } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { skillTypeShort, type SkillDecay, type SkillTypeShort } from '@/types/api';
 
@@ -29,6 +30,7 @@ type Filter = 'all' | 'module' | 'lesson';
  *     отсортирован от слабых к сильным.
  */
 export default function StrengthPage() {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<Filter>('all');
 
   const skillType: SkillTypeShort | undefined =
@@ -48,32 +50,30 @@ export default function StrengthPage() {
       <Button asChild variant="ghost" className="rounded-xl font-bold w-fit">
         <Link href="/profile">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Назад
+          {t('profile.back')}
         </Link>
       </Button>
 
       <div>
         <h1 className="text-3xl sm:text-4xl font-black flex items-center gap-3">
           <Layers className="h-8 w-8 text-primary" />
-          Сила навыков
+          {t('profile.strength.title')}
         </h1>
         <p className="text-muted-foreground font-medium mt-2">
-          Каждый завершённый урок и модуль становятся «навыком». Без
-          практики навык медленно «ржавеет» (decay) — практикуйтесь, чтобы
-          сохранить силу.
+          {t('profile.strength.subtitle')}
         </p>
       </div>
 
       <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
         <TabsList className="rounded-2xl border-2 p-1">
           <TabsTrigger value="all" className="rounded-xl font-bold px-4">
-            Все
+            {t('profile.strength.tabAll')}
           </TabsTrigger>
           <TabsTrigger value="module" className="rounded-xl font-bold px-4">
-            Модули
+            {t('profile.strength.tabModules')}
           </TabsTrigger>
           <TabsTrigger value="lesson" className="rounded-xl font-bold px-4">
-            Уроки
+            {t('profile.strength.tabLessons')}
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -83,10 +83,10 @@ export default function StrengthPage() {
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h2 className="text-xl font-black flex items-center gap-2">
             <TrendingDown className="h-5 w-5 text-amber-500" />
-            Слабые навыки
+            {t('profile.strength.weakTitle')}
           </h2>
           <Button asChild className="rounded-2xl h-10 px-5 font-bold">
-            <Link href="/practice/session">Подтянуть</Link>
+            <Link href="/practice/session">{t('profile.strength.weakBoost')}</Link>
           </Button>
         </div>
         {weak.isLoading ? (
@@ -95,7 +95,7 @@ export default function StrengthPage() {
           </div>
         ) : (weak.data?.skills?.length ?? 0) === 0 ? (
           <p className="text-muted-foreground font-medium text-sm">
-            Слабых навыков нет — отлично!
+            {t('profile.strength.weakEmpty')}
           </p>
         ) : (
           <div className="grid gap-2">
@@ -110,7 +110,7 @@ export default function StrengthPage() {
       <Card className="rounded-3xl border-4 p-6 space-y-4">
         <h2 className="text-xl font-black flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-emerald-500" />
-          Все навыки {sorted.length > 0 && <span className="text-muted-foreground font-bold text-base">· {sorted.length}</span>}
+          {t('profile.strength.allTitle')} {sorted.length > 0 && <span className="text-muted-foreground font-bold text-base">· {sorted.length}</span>}
         </h2>
 
         {all.isLoading ? (
@@ -119,7 +119,7 @@ export default function StrengthPage() {
           </div>
         ) : sorted.length === 0 ? (
           <p className="text-muted-foreground font-medium text-sm">
-            Здесь будут навыки, когда вы пройдёте первый урок.
+            {t('profile.strength.allEmpty')}
           </p>
         ) : (
           <div className="grid gap-2">
@@ -134,6 +134,7 @@ export default function StrengthPage() {
 }
 
 function SkillBar({ skill }: { skill: SkillDecay }) {
+  const { t } = useLanguage();
   const pct = Math.round(Math.max(0, Math.min(1, skill.current_strength)) * 100);
   const last = tsToDate(skill.last_practiced_at ?? null);
   const kind = skillTypeShort(skill.skill_type);
@@ -150,7 +151,7 @@ function SkillBar({ skill }: { skill: SkillDecay }) {
         <div className="flex items-center gap-2 flex-wrap text-xs">
           {kind && (
             <Badge variant="outline" className="rounded-full border-2 font-bold uppercase">
-              {kind === 'module' ? 'Модуль' : 'Урок'}
+              {kind === 'module' ? t('profile.strength.badgeModule') : t('profile.strength.badgeLesson')}
             </Badge>
           )}
           <span className="font-mono text-muted-foreground truncate">

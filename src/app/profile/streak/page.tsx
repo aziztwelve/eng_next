@@ -15,7 +15,7 @@ export default function StreakPage() {
   const useFreeze = useUseFreeze();
 
   const onFreeze = () => {
-    if (!confirm('Активировать streak freeze? Будет потрачен 1 freeze.')) return;
+    if (!confirm(t('profile.streak.freezeConfirm'))) return;
     useFreeze.mutate();
   };
 
@@ -39,23 +39,23 @@ export default function StreakPage() {
           className="rounded-2xl h-12 px-5 font-bold shadow-[0_4px_0_0_#0e7490] bg-cyan-500 hover:bg-cyan-500/90 text-white"
         >
           <Snowflake className="h-4 w-4 mr-2" />
-          Freeze · {stats?.streak_freezes ?? 0}
+          {t('profile.streak.freeze')} · {stats?.streak_freezes ?? 0}
         </Button>
       </div>
 
       <Card className="rounded-3xl border-4 p-6 grid grid-cols-3 gap-4">
-        <Stat label="Current" value={stats?.current_streak ?? 0} />
-        <Stat label="Max" value={stats?.max_streak ?? 0} />
-        <Stat label="Freezes" value={stats?.streak_freezes ?? 0} />
+        <Stat label={t('profile.streak.statCurrent')} value={stats?.current_streak ?? 0} />
+        <Stat label={t('profile.streak.statMax')} value={stats?.max_streak ?? 0} />
+        <Stat label={t('profile.streak.statFreezes')} value={stats?.streak_freezes ?? 0} />
       </Card>
 
       <Card className="rounded-3xl border-4 p-6 space-y-4">
-        <h2 className="text-xl font-black">Последние 30 дней</h2>
+        <h2 className="text-xl font-black">{t('profile.streak.last30days')}</h2>
         <StreakCalendar days={30} />
         <div className="flex flex-wrap gap-3 text-xs font-medium text-muted-foreground">
-          <Legend color="bg-emerald-500" label="completed" />
-          <Legend color="bg-cyan-500" label="freeze" />
-          <Legend color="bg-muted" label="missed" />
+          <Legend color="bg-emerald-500" label={t('profile.streak.legendCompleted')} />
+          <Legend color="bg-cyan-500" label={t('profile.streak.legendFreeze')} />
+          <Legend color="bg-muted" label={t('profile.streak.legendMissed')} />
         </div>
       </Card>
     </div>

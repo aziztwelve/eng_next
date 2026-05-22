@@ -1,25 +1,72 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useLanguage } from '@/lib/i18n';
 
 interface Props {
   params: Promise<{ quizId: string; attemptId: string }>;
 }
 
+interface QuizAnswer {
+  id: string;
+  answer_text: string;
+  is_correct: boolean;
+  order_index: number;
+}
+
+interface QuizQuestion {
+  question: {
+    id: string;
+    question_text: string;
+    explanation?: string;
+    points: number;
+  };
+  answers: QuizAnswer[];
+}
+
+interface QuizDetail {
+  quiz: {
+    id: string;
+    title: string;
+    passing_score_percentage: number;
+    max_attempts: number;
+    lesson_id: string;
+    show_correct_answers: boolean;
+  };
+  questions: QuizQuestion[];
+}
+
+interface UserAnswer {
+  question_id: string;
+  is_correct: boolean;
+  selected_answer_ids: string[];
+  points_earned: number;
+}
+
+interface AttemptDetail {
+  attempt: {
+    id: string;
+    is_passed: boolean;
+    score_percentage: number;
+    earned_points: number;
+    total_points: number;
+    time_spent_seconds?: number;
+    attempt_number: number;
+  };
+  answers: UserAnswer[];
+}
+
 export default function QuizResultPage({ params }: Props) {
+  const { t } = useLanguage();
   const resolvedParams = use(params);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [attempt, setAttempt] = useState<any>(null);
-  const [quiz, setQuiz] = useState<any>(null);
+  const [attempt, setAttempt] = useState<AttemptDetail | null>(null);
+  const [quiz, setQuiz] = useState<QuizDetail | null>(null);
 
-  useEffect(() => {
-    loadResults();
-  }, [resolvedParams.attemptId]);
-
-  const loadResults = async () => {
+  const loadResults = useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('access_token');
@@ -52,12 +99,17 @@ export default function QuizResultPage({ params }: Props) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [resolvedParams.attemptId, resolvedParams.quizId]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadResults();
+  }, [loadResults]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-gray-600">Loading results...</div>
+        <div className="text-gray-600">{t('quiz.result.loading')}</div>
       </div>
     );
   }
@@ -65,7 +117,7 @@ export default function QuizResultPage({ params }: Props) {
   if (!attempt || !quiz) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-gray-600">Results not found</div>
+        <div className="text-gray-600">{t('quiz.result.notFound')}</div>
       </div>
     );
   }
@@ -103,12 +155,12 @@ export default function QuizResultPage({ params }: Props) {
             )}
 
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {passed ? 'Congratulations!' : 'Keep Trying!'}
+              {passed ? t('quiz.result.congrats') : t('quiz.result.keepTrying')}
             </h1>
             <p className="text-gray-600 mb-6">
               {passed
-                ? 'You passed the quiz!'
-                : `You need ${quiz.quiz.passing_score_percentage}% to pass`}
+                ? t('quiz.result.passed')
+                : t('quiz.result.needScore').replace('{percent}', String(quiz.quiz.passing_score_percentage))}
             </p>
 
             <div className="grid grid-cols-3 gap-6 mb-6">
@@ -116,21 +168,21 @@ export default function QuizResultPage({ params }: Props) {
                 <div className={`text-4xl font-bold ${passed ? 'text-green-600' : 'text-red-600'}`}>
                   {scorePercentage.toFixed(0)}%
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Score</div>
+                <div className="text-sm text-gray-600 mt-1">{t('quiz.result.score')}</div>
               </div>
 
               <div className="text-center">
                 <div className="text-4xl font-bold text-gray-900">
                   {earnedPoints}/{totalPoints}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Points</div>
+                <div className="text-sm text-gray-600 mt-1">{t('quiz.result.points')}</div>
               </div>
 
               <div className="text-center">
                 <div className="text-4xl font-bold text-gray-900">
                   {timeSpent ? formatTime(timeSpent) : 'N/A'}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Time</div>
+                <div className="text-sm text-gray-600 mt-1">{t('quiz.result.time')}</div>
               </div>
             </div>
 
@@ -139,14 +191,14 @@ export default function QuizResultPage({ params }: Props) {
                 href="/dashboard"
                 className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
               >
-                Back to Dashboard
+                {t('quiz.result.backToDashboard')}
               </Link>
               {!passed && attempt.attempt.attempt_number < quiz.quiz.max_attempts && (
                 <button
                   onClick={() => router.push(`/lesson/${quiz.quiz.lesson_id}`)}
                   className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
-                  Try Again
+                  {t('quiz.result.tryAgain')}
                 </button>
               )}
             </div>
@@ -156,11 +208,11 @@ export default function QuizResultPage({ params }: Props) {
         {/* Detailed Results */}
         {quiz.quiz.show_correct_answers && (
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Review Answers</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('quiz.result.reviewAnswers')}</h2>
 
             <div className="space-y-6">
-              {quiz.questions.map((q: any, index: number) => {
-                const userAnswer = attempt.answers.find((a: any) => a.question_id === q.question.id);
+              {quiz.questions.map((q, index) => {
+                const userAnswer = attempt.answers.find((a) => a.question_id === q.question.id);
                 const isCorrect = userAnswer?.is_correct;
 
                 return (
@@ -177,7 +229,7 @@ export default function QuizResultPage({ params }: Props) {
                         </div>
 
                         <div className="space-y-2">
-                          {q.answers.map((answer: any) => {
+                          {q.answers.map((answer) => {
                             const isUserAnswer = userAnswer?.selected_answer_ids?.includes(answer.id);
                             const isCorrectAnswer = answer.is_correct;
 
@@ -210,13 +262,15 @@ export default function QuizResultPage({ params }: Props) {
 
                         {q.question.explanation && (
                           <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                            <div className="text-sm font-medium text-blue-900 mb-1">Explanation:</div>
+                            <div className="text-sm font-medium text-blue-900 mb-1">{t('quiz.result.explanation')}</div>
                             <div className="text-sm text-blue-800">{q.question.explanation}</div>
                           </div>
                         )}
 
                         <div className="text-sm text-gray-600 mt-2">
-                          Points: {userAnswer?.points_earned || 0} / {q.question.points}
+                          {t('quiz.result.pointsRow')
+                            .replace('{earned}', String(userAnswer?.points_earned || 0))
+                            .replace('{total}', String(q.question.points))}
                         </div>
                       </div>
                     </div>

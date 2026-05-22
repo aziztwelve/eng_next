@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMistakes } from '@/hooks/use-srs';
 import { tsToDate } from '@/lib/gamification-api';
+import { useLanguage } from '@/lib/i18n';
 import type { Mistake, MistakeFilter } from '@/types/api';
 
 const PAGE_SIZE = 20;
@@ -22,6 +23,7 @@ const PAGE_SIZE = 20;
  * шаг (см. step-validation.recordSRS). Здесь — только просмотр.
  */
 export default function MistakesPage() {
+  const { t } = useLanguage();
   const [tab, setTab] = useState<MistakeFilter>('unresolved');
   const [page, setPage] = useState(0);
 
@@ -46,31 +48,30 @@ export default function MistakesPage() {
       <Button asChild variant="ghost" className="rounded-xl font-bold w-fit">
         <Link href="/practice">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          К практике
+          {t('practice.mistakes.backToPractice')}
         </Link>
       </Button>
 
       <div>
         <h1 className="text-3xl sm:text-4xl font-black flex items-center gap-3">
           <AlertTriangle className="h-8 w-8 text-orange-500" />
-          Ошибки
+          {t('practice.mistakes.title')}
         </h1>
         <p className="text-muted-foreground font-medium mt-2">
-          Шаги, на которых вы запинались. Снимаются автоматически, когда
-          вы отвечаете правильно на тот же шаг.
+          {t('practice.mistakes.subtitle')}
         </p>
       </div>
 
       <Tabs value={tab} onValueChange={onTabChange}>
         <TabsList className="rounded-2xl border-2 p-1">
           <TabsTrigger value="unresolved" className="rounded-xl font-bold px-4">
-            Не исправлены
+            {t('practice.mistakes.tabUnresolved')}
           </TabsTrigger>
           <TabsTrigger value="resolved" className="rounded-xl font-bold px-4">
-            Исправлены
+            {t('practice.mistakes.tabResolved')}
           </TabsTrigger>
           <TabsTrigger value="all" className="rounded-xl font-bold px-4">
-            Все
+            {t('practice.mistakes.tabAll')}
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -81,13 +82,13 @@ export default function MistakesPage() {
         </Card>
       ) : list.length === 0 ? (
         <Card className="rounded-3xl border-4 p-12 text-center space-y-2">
-          <h2 className="text-xl font-black">Здесь пусто</h2>
+          <h2 className="text-xl font-black">{t('practice.mistakes.emptyTitle')}</h2>
           <p className="text-muted-foreground font-medium">
             {tab === 'unresolved'
-              ? 'Все ошибки исправлены — отличная работа!'
+              ? t('practice.mistakes.emptyUnresolved')
               : tab === 'resolved'
-                ? 'Пока нет исправленных ошибок.'
-                : 'У вас ещё нет зарегистрированных ошибок.'}
+                ? t('practice.mistakes.emptyResolved')
+                : t('practice.mistakes.emptyAll')}
           </p>
         </Card>
       ) : (
@@ -101,7 +102,10 @@ export default function MistakesPage() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between gap-3">
           <div className="text-sm font-bold text-muted-foreground tabular-nums">
-            Страница {page + 1} / {totalPages} · всего {total}
+            {t('practice.mistakes.pageInfo')
+              .replace('{page}', String(page + 1))
+              .replace('{total}', String(totalPages))
+              .replace('{count}', String(total))}
           </div>
           <div className="flex gap-2">
             <Button
@@ -111,7 +115,7 @@ export default function MistakesPage() {
               className="rounded-2xl border-2 h-11 px-4 font-bold"
             >
               <ChevronLeft className="h-4 w-4 mr-1" />
-              Назад
+              {t('practice.mistakes.prev')}
             </Button>
             <Button
               onClick={() => setPage((p) => (p + 1 < totalPages ? p + 1 : p))}
@@ -119,7 +123,7 @@ export default function MistakesPage() {
               variant="outline"
               className="rounded-2xl border-2 h-11 px-4 font-bold"
             >
-              Вперёд
+              {t('practice.mistakes.next')}
               <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
@@ -130,6 +134,7 @@ export default function MistakesPage() {
 }
 
 function MistakeRow({ mistake }: { mistake: Mistake }) {
+  const { t } = useLanguage();
   const last = tsToDate(mistake.last_made_at ?? null);
   const resolved = mistake.is_resolved;
   return (
@@ -139,12 +144,12 @@ function MistakeRow({ mistake }: { mistake: Mistake }) {
           {resolved ? (
             <Badge className="rounded-full bg-emerald-500 text-white font-bold gap-1.5">
               <CheckCircle2 className="w-3 h-3" />
-              Исправлено
+              {t('practice.mistakes.badgeResolved')}
             </Badge>
           ) : (
             <Badge className="rounded-full bg-orange-500 text-white font-bold gap-1.5">
               <AlertTriangle className="w-3 h-3" />
-              Не исправлено
+              {t('practice.mistakes.badgeUnresolved')}
             </Badge>
           )}
           <span className="text-sm font-bold tabular-nums text-muted-foreground">
@@ -152,12 +157,12 @@ function MistakeRow({ mistake }: { mistake: Mistake }) {
           </span>
         </div>
         <div className="font-mono text-xs text-muted-foreground break-all">
-          step: {mistake.step_id}
+          {t('practice.mistakes.stepLabel')} {mistake.step_id}
         </div>
         {mistake.incorrect_answer && Object.keys(mistake.incorrect_answer).length > 0 && (
           <details className="text-xs">
             <summary className="cursor-pointer font-bold text-muted-foreground hover:text-foreground">
-              Ваш ответ
+              {t('practice.mistakes.yourAnswer')}
             </summary>
             <pre className="mt-2 rounded-lg bg-muted p-3 overflow-auto max-h-40 whitespace-pre-wrap break-words">
               {JSON.stringify(mistake.incorrect_answer, null, 2)}

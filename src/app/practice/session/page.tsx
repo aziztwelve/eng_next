@@ -34,6 +34,7 @@ import {
   type PracticeItem,
   type SubmitAnswerResponse,
 } from '@/types/api';
+import { useLanguage } from '@/lib/i18n';
 
 /**
  * /practice/session — одна сессия практики.
@@ -47,6 +48,7 @@ import {
  *   4. На последнем шаге — экран summary + ссылка обратно.
  */
 export default function PracticeSessionPage() {
+  const { t } = useLanguage();
   const generate = useGeneratePracticeSession();
   const fireGamificationFx = useLessonGamificationFx();
   const qc = useQueryClient();
@@ -93,12 +95,12 @@ export default function PracticeSessionPage() {
     return (
       <ContainerWithBack>
         <Card className="rounded-3xl border-4 p-8 text-center space-y-4">
-          <p className="font-bold">Не удалось сгенерировать сессию.</p>
+          <p className="font-bold">{t('practice.session.failedToGenerate')}</p>
           <Button
             onClick={() => generate.mutate({ size: 10 })}
             className="rounded-2xl h-12 px-6 font-bold"
           >
-            Попробовать ещё раз
+            {t('practice.session.retry')}
           </Button>
         </Card>
       </ContainerWithBack>
@@ -109,13 +111,12 @@ export default function PracticeSessionPage() {
       <ContainerWithBack>
         <Card className="rounded-3xl border-4 p-12 text-center space-y-4">
           <Clock className="h-12 w-12 mx-auto text-muted-foreground" />
-          <h2 className="text-2xl font-black">Сейчас нечего повторять</h2>
+          <h2 className="text-2xl font-black">{t('practice.session.nothingTitle')}</h2>
           <p className="text-muted-foreground font-medium max-w-md mx-auto">
-            Карточек на повторение нет, ошибок и слабых навыков тоже. Хорошая
-            работа — возвращайтесь, когда наберётся материал.
+            {t('practice.session.nothingText')}
           </p>
           <Button asChild className="rounded-2xl h-12 px-6 font-bold">
-            <Link href="/practice">К практике</Link>
+            <Link href="/practice">{t('practice.session.backCta')}</Link>
           </Button>
         </Card>
       </ContainerWithBack>
@@ -128,9 +129,11 @@ export default function PracticeSessionPage() {
       <ContainerWithBack>
         <Card className="rounded-3xl border-4 p-8 text-center space-y-4">
           <Sparkles className="h-12 w-12 mx-auto text-primary" />
-          <h2 className="text-3xl font-black">Сессия завершена!</h2>
+          <h2 className="text-3xl font-black">{t('practice.session.finishedTitle')}</h2>
           <p className="text-muted-foreground font-medium">
-            Верно: <b className="text-foreground">{correct}</b> из {total}
+            {t('practice.session.finishedScore')
+              .replace('{correct}', String(correct))
+              .replace('{total}', String(total))}
           </p>
           <div className="flex flex-wrap gap-3 justify-center pt-2">
             <Button
@@ -155,10 +158,10 @@ export default function PracticeSessionPage() {
               }}
               className="rounded-2xl h-12 px-6 font-bold"
             >
-              Ещё одна сессия
+              {t('practice.session.againSession')}
             </Button>
             <Button asChild variant="outline" className="rounded-2xl h-12 px-6 font-bold border-2">
-              <Link href="/practice">К практике</Link>
+              <Link href="/practice">{t('practice.session.backCta')}</Link>
             </Button>
           </div>
         </Card>
@@ -188,12 +191,13 @@ export default function PracticeSessionPage() {
 }
 
 function ContainerWithBack({ children }: { children: React.ReactNode }) {
+  const { t } = useLanguage();
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-20 px-4 py-8">
       <Button asChild variant="ghost" className="rounded-xl font-bold w-fit">
         <Link href="/practice">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          К практике
+          {t('practice.session.backToPractice')}
         </Link>
       </Button>
       {children}
@@ -218,12 +222,13 @@ function ProgressBar({ pct, index, total }: { pct: number; index: number; total:
 }
 
 function SourceBadge({ item }: { item: PracticeItem }) {
+  const { t } = useLanguage();
   const src = practiceSourceLabel(item.source);
   if (src === 'overdue') {
     return (
       <Badge className="rounded-full bg-primary text-primary-foreground font-bold gap-1.5">
         <Clock className="w-3 h-3" />
-        К повторению
+        {t('practice.session.sourceOverdue')}
       </Badge>
     );
   }
@@ -231,7 +236,7 @@ function SourceBadge({ item }: { item: PracticeItem }) {
     return (
       <Badge className="rounded-full bg-orange-500 text-white font-bold gap-1.5">
         <AlertTriangle className="w-3 h-3" />
-        Ошибка
+        {t('practice.session.sourceMistake')}
       </Badge>
     );
   }
@@ -239,7 +244,7 @@ function SourceBadge({ item }: { item: PracticeItem }) {
     return (
       <Badge className="rounded-full bg-amber-500 text-white font-bold gap-1.5">
         <TrendingDown className="w-3 h-3" />
-        Слабая
+        {t('practice.session.sourceWeak')}
       </Badge>
     );
   }
@@ -261,6 +266,7 @@ function CurrentStepCard({
   startedAtRef: React.RefObject<number>;
   onAdvance: () => void;
 }) {
+  const { t } = useLanguage();
   const step = useStep(item.step_id);
   const submit = useStepSubmit();
   const lastResultRef = useRef<{ stepId: string; correct: boolean } | null>(null);
@@ -312,9 +318,9 @@ function CurrentStepCard({
   if (step.isError || !step.data?.step) {
     return (
       <Card className="rounded-3xl border-4 p-8 text-center space-y-3">
-        <p className="font-bold">Не удалось загрузить шаг.</p>
+        <p className="font-bold">{t('practice.session.failedToLoadStep')}</p>
         <Button onClick={onContinue} className="rounded-2xl h-10 px-5 font-bold">
-          Пропустить
+          {t('practice.session.skip')}
         </Button>
       </Card>
     );
@@ -327,7 +333,7 @@ function CurrentStepCard({
         <SourceBadge item={item} />
         <h2 className="text-xl font-black">{step.data.step.title}</h2>
         <p className="text-muted-foreground font-medium">
-          Этот шаг — не интерактивный, в практике пропускаем.
+          {t('practice.session.nonInteractive')}
         </p>
         <Button
           onClick={() => {
@@ -336,7 +342,7 @@ function CurrentStepCard({
           }}
           className="rounded-2xl h-12 px-6 font-bold"
         >
-          Дальше
+          {t('practice.session.next')}
         </Button>
       </Card>
     );

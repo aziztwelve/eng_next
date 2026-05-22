@@ -1,16 +1,25 @@
-/* eng-notifications-sw v1
+/* eng-notifications-sw v2
  *
  * Минимальный service worker для Web Push.
  * Регистрируется на window load (см. src/lib/web-push.ts).
  *
  * Контракт payload'а notifications-service (SendNotification):
- *   { title, body, data: { kind, ...rest } }
+ *   { title, body, data: { kind?, event?, deep_link?, url?, ...rest } }
  *
- * Deep link определяется по `kind`:
+ * Resolve deep-link (по приоритету):
+ *   1. data.url           — явное переопределение (legacy)
+ *   2. data.deep_link     — конвенция social-service
+ *   3. DEEPLINK_BY_EVENT[data.event]  — внутри-канальная дифференциация
+ *   4. DEEPLINK_BY_KIND[data.kind]    — fallback на channel
+ *   5. '/'
+ *
+ * Каналы:
  *   - practice_reminder → /practice
  *   - streak_risk       → /learn
  *   - daily_goal        → /
  *   - achievement       → /profile/achievements
+ *   - friend_request    → /friends/pending (на event=friend_request) либо
+ *                         /friends (на event=friend_accepted).
  */
 
 const DEEPLINK_BY_KIND = {
@@ -18,6 +27,12 @@ const DEEPLINK_BY_KIND = {
   streak_risk: '/learn',
   daily_goal: '/',
   achievement: '/profile/achievements',
+  friend_request: '/friends/pending',
+};
+
+const DEEPLINK_BY_EVENT = {
+  friend_request: '/friends/pending',
+  friend_accepted: '/friends',
 };
 
 self.addEventListener('install', () => {
@@ -61,7 +76,13 @@ self.addEventListener('notificationclick', (event) => {
 
   const data = event.notification.data || {};
   const kind = data.kind || '';
-  const url = data.url || DEEPLINK_BY_KIND[kind] || '/';
+  const ev = data.event || '';
+  const url =
+    data.url ||
+    data.deep_link ||
+    DEEPLINK_BY_EVENT[ev] ||
+    DEEPLINK_BY_KIND[kind] ||
+    '/';
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {

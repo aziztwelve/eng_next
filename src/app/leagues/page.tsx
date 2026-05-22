@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useMyLeaderboard, useMyLeague } from '@/hooks/use-leagues';
 import { tsToDate } from '@/lib/gamification-api';
+import { useLanguage } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import type { LeaderboardEntry } from '@/types/api';
 
@@ -37,6 +38,7 @@ import type { LeaderboardEntry } from '@/types/api';
  * поэтому новый юзер сразу попадёт в Bronze когорту без явного действия.
  */
 export default function LeaguesPage() {
+  const { t } = useLanguage();
   const myLeague = useMyLeague();
   const board = useMyLeaderboard();
 
@@ -58,9 +60,9 @@ export default function LeaguesPage() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <Card className="rounded-3xl border-4 p-8 text-center space-y-3">
           <Trophy className="h-12 w-12 mx-auto text-muted-foreground" />
-          <h2 className="text-2xl font-black">Лиги ещё недоступны</h2>
+          <h2 className="text-2xl font-black">{t('leagues.page.notAvailableTitle')}</h2>
           <p className="text-muted-foreground font-medium">
-            Похоже, social-service не отвечает. Попробуйте позже.
+            {t('leagues.page.notAvailableText')}
           </p>
         </Card>
       </div>
@@ -89,17 +91,16 @@ export default function LeaguesPage() {
         <div>
           <h1 className="text-3xl sm:text-4xl font-black flex items-center gap-3">
             <Trophy className="h-8 w-8 text-amber-500" />
-            Лиги
+            {t('leagues.page.title')}
           </h1>
           <p className="text-muted-foreground font-medium mt-2">
-            Соревнуйтесь в когорте из 30 человек. Топ 7 → новая лига,
-            низ 5 → старая. Цикл — неделя по UTC.
+            {t('leagues.page.subtitle')}
           </p>
         </div>
         <Button asChild variant="outline" className="rounded-2xl border-2">
           <Link href="/leagues/history">
             <History className="h-4 w-4 mr-2" />
-            История
+            {t('leagues.page.historyBtn')}
           </Link>
         </Button>
       </div>
@@ -151,6 +152,7 @@ function Hero({
   myXP: number;
   cohortSize: number;
 }) {
+  const { t, language } = useLanguage();
   const accent = league?.color || '#CD7F32';
   return (
     <Card
@@ -167,25 +169,27 @@ function Hero({
 
         <div className="space-y-1">
           <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Tier {league?.tier ?? '—'}
+            {league?.tier
+              ? t('leagues.page.tier').replace('{n}', String(league.tier))
+              : t('leagues.page.tierFallback')}
           </div>
           <h2 className="text-2xl sm:text-3xl font-black">
-            {league?.name ?? 'Bronze League'}
+            {league?.name ?? t('leagues.page.defaultLeagueName')}
           </h2>
           <p className="text-muted-foreground font-medium text-sm">
-            В когорте из {cohortSize || 30} человек
+            {t('leagues.page.cohortOf').replace('{n}', String(cohortSize || 30))}
           </p>
         </div>
 
         <div className="flex flex-col items-end gap-1">
           <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Ваше место
+            {t('leagues.page.yourPlace')}
           </div>
           <div className="text-4xl font-black tabular-nums">
-            #{myRank || '—'}
+            {myRank ? `#${myRank}` : t('leagues.page.rankPlaceholder')}
           </div>
           <div className="text-sm font-bold text-primary tabular-nums">
-            {myXP.toLocaleString('ru')} XP
+            {myXP.toLocaleString(language === 'en' ? 'en' : 'ru')} XP
           </div>
         </div>
       </div>
@@ -198,11 +202,12 @@ function Hero({
 }
 
 function CycleTimer({ endsAt }: { endsAt?: string }) {
+  const { t } = useLanguage();
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000 * 30);
-    return () => clearInterval(t);
+    const timer = setInterval(() => setNow(Date.now()), 1000 * 30);
+    return () => clearInterval(timer);
   }, []);
 
   const remaining = useMemo(() => {
@@ -221,20 +226,23 @@ function CycleTimer({ endsAt }: { endsAt?: string }) {
   if (!remaining) {
     return (
       <span className="text-sm text-muted-foreground font-medium">
-        Цикл активен
+        {t('leagues.page.cycleActive')}
       </span>
     );
   }
   if (remaining.ended) {
     return (
       <span className="text-sm font-bold text-amber-600">
-        Подведение итогов скоро…
+        {t('leagues.page.cycleEndingSoon')}
       </span>
     );
   }
   return (
     <span className="text-sm font-bold tabular-nums">
-      До конца цикла: {remaining.d}д {remaining.h}ч {remaining.m}м
+      {t('leagues.page.cycleRemaining')
+        .replace('{d}', String(remaining.d))
+        .replace('{h}', String(remaining.h))
+        .replace('{m}', String(remaining.m))}
     </span>
   );
 }
@@ -252,6 +260,7 @@ function ZoneHints({
   demotionCount: number;
   cohortSize: number;
 }) {
+  const { t } = useLanguage();
   return (
     <div className="grid sm:grid-cols-2 gap-3">
       {promotionCount > 0 && (
@@ -259,10 +268,10 @@ function ZoneHints({
           <ArrowUp className="h-6 w-6 text-emerald-600 shrink-0" />
           <div className="text-sm">
             <div className="font-black text-emerald-700">
-              Промо-зона: топ {promotionCount}
+              {t('leagues.page.promotionTitle').replace('{n}', String(promotionCount))}
             </div>
             <div className="text-muted-foreground font-medium">
-              Места 1–{promotionCount} переходят в следующую лигу
+              {t('leagues.page.promotionDesc').replace('{n}', String(promotionCount))}
             </div>
           </div>
         </Card>
@@ -272,11 +281,12 @@ function ZoneHints({
           <ArrowDown className="h-6 w-6 text-rose-600 shrink-0" />
           <div className="text-sm">
             <div className="font-black text-rose-700">
-              Зона риска: низ {demotionCount}
+              {t('leagues.page.demotionTitle').replace('{n}', String(demotionCount))}
             </div>
             <div className="text-muted-foreground font-medium">
-              Места {cohortSize - demotionCount + 1}–{cohortSize} опустятся в
-              предыдущую лигу
+              {t('leagues.page.demotionDesc')
+                .replace('{from}', String(cohortSize - demotionCount + 1))
+                .replace('{to}', String(cohortSize))}
             </div>
           </div>
         </Card>
@@ -298,11 +308,12 @@ function Leaderboard({
   promotionCount: number;
   demotionCount: number;
 }) {
+  const { t } = useLanguage();
   if (entries.length === 0) {
     return (
       <Card className="rounded-3xl border-4 p-8 text-center">
         <p className="text-muted-foreground font-medium">
-          Когорта пока пуста. Получите XP, чтобы появиться на доске!
+          {t('leagues.page.boardEmpty')}
         </p>
       </Card>
     );
@@ -311,7 +322,7 @@ function Leaderboard({
   return (
     <Card className="rounded-3xl border-4 overflow-hidden">
       <div className="px-6 py-4 border-b-2 bg-muted/30 font-black text-lg">
-        Топ когорты
+        {t('leagues.page.boardTitle')}
       </div>
       <ul>
         {entries.map((e, idx) => (
@@ -341,11 +352,14 @@ function LeaderboardRow({
   isDemotion: boolean;
   isLast: boolean;
 }) {
+  const { t, language } = useLanguage();
   const isTop3 = entry.rank <= 3;
   const initial =
     entry.full_name?.slice(0, 1).toUpperCase() ||
     entry.user_id.slice(0, 1).toUpperCase();
-  const name = entry.full_name || `User ${entry.user_id.slice(0, 6)}`;
+  const name =
+    entry.full_name ||
+    t('leagues.page.userFallback').replace('{short}', entry.user_id.slice(0, 6));
 
   return (
     <li
@@ -386,14 +400,14 @@ function LeaderboardRow({
           {name}
           {entry.is_me && (
             <Badge className="rounded-lg bg-primary text-primary-foreground font-bold text-xs">
-              Вы
+              {t('leagues.page.you')}
             </Badge>
           )}
         </div>
       </div>
 
       <div className="font-black tabular-nums">
-        {entry.weekly_xp.toLocaleString('ru')}{' '}
+        {entry.weekly_xp.toLocaleString(language === 'en' ? 'en' : 'ru')}{' '}
         <span className="text-xs text-muted-foreground font-bold">XP</span>
       </div>
     </li>

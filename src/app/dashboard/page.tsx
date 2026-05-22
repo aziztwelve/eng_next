@@ -9,6 +9,7 @@ import Link from "next/link";
 import { ACHIEVEMENTS, COURSES, LEADERBOARD, USER_STATS } from "@/lib/mock-data";
 import { useLanguage } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { LeagueBanner } from "@/components/leagues/LeagueBanner";
 
 export default function DashboardPage() {
   const { t } = useLanguage();
@@ -63,6 +64,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </section>
+
+      {/* League Banner (Phase 4.5) */}
+      <LeagueBanner />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         

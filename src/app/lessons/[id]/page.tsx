@@ -18,6 +18,7 @@ import { LessonTypeBadge, type LessonContext } from "@/components/tracks/LessonT
 import { StepRenderer } from "@/components/lesson/StepRenderer";
 import type { Step, QuizContent, TextContent, VideoContent } from "@/types/api";
 import { isInteractiveStep } from "@/types/api";
+import { useLanguage } from "@/lib/i18n";
 
 function parseStepContent<T>(step: Step): T | null {
   try {
@@ -28,6 +29,7 @@ function parseStepContent<T>(step: Step): T | null {
 }
 
 function StepBody({ step }: { step: Step }) {
+  const { t } = useLanguage();
   switch (step.type) {
     case "text": {
       const c = parseStepContent<TextContent>(step);
@@ -45,7 +47,9 @@ function StepBody({ step }: { step: Step }) {
             <Play className="w-16 h-16 text-muted-foreground" />
           </div>
           <p className="text-xs text-muted-foreground font-medium">
-            video_id: {c?.video_id ?? "—"} · {c?.duration_seconds ?? 0}s
+            {t("lessons.videoPlaceholder")
+              .replace("{id}", c?.video_id ?? "—")
+              .replace("{seconds}", String(c?.duration_seconds ?? 0))}
           </p>
         </div>
       );
@@ -57,18 +61,19 @@ function StepBody({ step }: { step: Step }) {
     default:
       return (
         <Card className="rounded-2xl border-4 p-6 font-medium text-muted-foreground">
-          Тип шага «{step.type}» пока не поддержан в этом просмотре.
+          {t("lessons.unsupportedType").replace("{type}", step.type)}
         </Card>
       );
   }
 }
 
 function QuizStepBody({ questions }: { questions: QuizContent["questions"] }) {
+  const { t } = useLanguage();
   const [answers, setAnswers] = useState<Record<number, number | null>>({});
   const [revealed, setRevealed] = useState(false);
 
   if (questions.length === 0) {
-    return <p className="text-muted-foreground font-medium">В этом квизе нет вопросов.</p>;
+    return <p className="text-muted-foreground font-medium">{t("lessons.noQuestions")}</p>;
   }
 
   return (
@@ -111,7 +116,7 @@ function QuizStepBody({ questions }: { questions: QuizContent["questions"] }) {
           className="h-12 rounded-2xl font-bold px-6"
           disabled={Object.keys(answers).length < questions.length}
         >
-          Показать ответы
+          {t("lessons.showAnswers")}
         </Button>
       )}
     </div>
@@ -119,6 +124,7 @@ function QuizStepBody({ questions }: { questions: QuizContent["questions"] }) {
 }
 
 export default function LessonPage() {
+  const { t } = useLanguage();
   const params = useParams();
   const router = useRouter();
   const lessonId = (params?.id as string) ?? "";
@@ -152,10 +158,11 @@ export default function LessonPage() {
   if (error || !data?.lesson) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <h2 className="text-3xl font-black">Lesson not found</h2>
+        <h2 className="text-3xl font-black">{t("lessons.notFound")}</h2>
         <Button asChild variant="outline" className="rounded-2xl border-4 font-bold">
           <Link href="/tracks">
-            <ArrowLeft className="w-4 h-4 mr-2" />К трекам
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {t("lessons.backToTracks")}
           </Link>
         </Button>
       </div>
@@ -168,7 +175,7 @@ export default function LessonPage() {
       setIndex(index + 1);
       setStepStartedAt(Date.now());
     } else {
-      toast.success("Урок пройден!");
+      toast.success(t("lessons.lessonComplete"));
       router.push(context === "standalone" ? "/tracks" : "/dashboard");
     }
   };
@@ -187,7 +194,7 @@ export default function LessonPage() {
       advance();
     } catch (e) {
       console.error(e);
-      toast.error("Не удалось сохранить прогресс");
+      toast.error(t("lessons.saveProgressFail"));
     }
   };
 
@@ -219,7 +226,8 @@ export default function LessonPage() {
       <div>
         <Button asChild variant="ghost" className="rounded-xl font-bold mb-4">
           <Link href={context === "standalone" ? "/tracks" : "/dashboard"}>
-            <ArrowLeft className="w-4 h-4 mr-2" />Назад
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {t("lessons.back")}
           </Link>
         </Button>
 
@@ -228,7 +236,7 @@ export default function LessonPage() {
           {context === "standalone" && (
             <Badge variant="outline" className="rounded-full px-3 py-1 font-bold border-2 gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
-              Без записи на курс
+              {t("lessons.standaloneBadge")}
             </Badge>
           )}
         </div>
@@ -255,7 +263,7 @@ export default function LessonPage() {
 
       {!currentStep ? (
         <Card className="rounded-2xl border-4 p-8 text-center text-muted-foreground font-medium">
-          В этом уроке пока нет шагов.
+          {t("lessons.noSteps")}
         </Card>
       ) : (
         <section className="space-y-6">
@@ -286,7 +294,8 @@ export default function LessonPage() {
                     setStepStartedAt(Date.now());
                   }}
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />Назад
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  {t("lessons.back")}
                 </Button>
 
                 <Button
@@ -299,7 +308,7 @@ export default function LessonPage() {
                   ) : (
                     <CheckCircle2 className="w-5 h-5" />
                   )}
-                  {index + 1 === steps.length ? "Завершить урок" : "Дальше"}
+                  {index + 1 === steps.length ? t("lessons.finishLesson") : t("lessons.next")}
                   {index + 1 < steps.length && <ArrowRight className="w-4 h-4" />}
                 </Button>
               </div>

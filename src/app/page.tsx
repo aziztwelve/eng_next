@@ -12,6 +12,7 @@ import { useTracks } from "@/hooks/use-tracks";
 import { useDailyLesson } from "@/hooks/use-daily-lesson";
 import { TrackCard } from "@/components/tracks/TrackCard";
 import { DailyLessonCard } from "@/components/tracks/DailyLessonCard";
+import { LeagueBanner } from "@/components/leagues/LeagueBanner";
 
 export default function HomePage() {
   const { t } = useLanguage();
@@ -106,6 +107,11 @@ export default function HomePage() {
           <DailyLessonCard track={dailyTrack} lesson={dailyLesson} />
         </section>
       )}
+
+      {/* League Banner (Phase 4.5) */}
+      <section>
+        <LeagueBanner />
+      </section>
 
       {/* Tracks (Phase 0) */}
       {tracks.length > 0 && (

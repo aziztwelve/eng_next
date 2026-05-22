@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useSrsStats, useMistakes, useWeakSkills } from '@/hooks/use-srs';
+import { useLanguage } from '@/lib/i18n';
 
 /**
  * /practice — лендинг для практики.
@@ -24,6 +25,7 @@ import { useSrsStats, useMistakes, useWeakSkills } from '@/hooks/use-srs';
  * `/practice/session`.
  */
 export default function PracticeLandingPage() {
+  const { t } = useLanguage();
   const stats = useSrsStats();
   const mistakes = useMistakes({ resolved: 'unresolved', limit: 1 });
   const weakSkills = useWeakSkills({ limit: 3 });
@@ -40,11 +42,10 @@ export default function PracticeLandingPage() {
       <div>
         <h1 className="text-3xl sm:text-4xl font-black flex items-center gap-3">
           <Sparkles className="h-8 w-8 text-primary" />
-          Практика
+          {t('practice.hub.title')}
         </h1>
         <p className="text-muted-foreground font-medium mt-2">
-          Закрепляйте материал по алгоритму SM-2: повторяйте просроченные
-          карточки, исправляйте ошибки и подкачивайте «ржавеющие» навыки.
+          {t('practice.hub.subtitle')}
         </p>
       </div>
 
@@ -58,18 +59,18 @@ export default function PracticeLandingPage() {
         <>
           <Card className="rounded-3xl border-4 p-6">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <Stat label="К повторению" value={dueNow} accent="primary" />
+              <Stat label={t('practice.hub.statsDue')} value={dueNow} accent="primary" />
               <Stat
-                label="Освоено"
+                label={t('practice.hub.statsMastered')}
                 value={stats.data?.mastered ?? 0}
                 accent="success"
               />
-              <Stat label="В работе" value={stats.data?.learning ?? 0} />
-              <Stat label="Новые" value={stats.data?.fresh ?? 0} />
+              <Stat label={t('practice.hub.statsLearning')} value={stats.data?.learning ?? 0} />
+              <Stat label={t('practice.hub.statsFresh')} value={stats.data?.fresh ?? 0} />
             </div>
             <div className="mt-6 flex items-center justify-between flex-wrap gap-3 text-sm text-muted-foreground font-medium">
-              <span>Всего карточек: {total}</span>
-              <span>Сегодня повторено: {stats.data?.reviewed_today ?? 0}</span>
+              <span>{t('practice.hub.totalCards').replace('{n}', String(total))}</span>
+              <span>{t('practice.hub.reviewedToday').replace('{n}', String(stats.data?.reviewed_today ?? 0))}</span>
             </div>
           </Card>
 
@@ -78,12 +79,12 @@ export default function PracticeLandingPage() {
               <div className="space-y-1">
                 <h2 className="text-2xl font-black flex items-center gap-2">
                   <Play className="h-6 w-6" />
-                  Начать практику
+                  {t('practice.hub.startTitle')}
                 </h2>
                 <p className="text-muted-foreground font-medium">
                   {dueNow > 0
-                    ? `${dueNow} карточек ждут повторения. Микс «просроченные / ошибки / слабые» (50 / 30 / 20).`
-                    : 'Просроченных нет — пробежимся по слабым местам и ошибкам.'}
+                    ? t('practice.hub.startDescDue').replace('{n}', String(dueNow))
+                    : t('practice.hub.startDescNoDue')}
                 </p>
               </div>
               <Button
@@ -92,7 +93,7 @@ export default function PracticeLandingPage() {
               >
                 <Link href="/practice/session">
                   <Play className="h-5 w-5 mr-2 fill-current" />
-                  Поехали
+                  {t('practice.hub.startCta')}
                 </Link>
               </Button>
             </div>
@@ -107,10 +108,10 @@ export default function PracticeLandingPage() {
               <div className="space-y-1">
                 <h3 className="font-black text-xl flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-orange-500" />
-                  Ошибки
+                  {t('practice.hub.cardMistakesTitle')}
                 </h3>
                 <p className="text-sm text-muted-foreground font-medium">
-                  Шаги, на которых вы запинались
+                  {t('practice.hub.cardMistakesDesc')}
                 </p>
               </div>
               {unresolvedMistakes > 0 && (
@@ -128,10 +129,10 @@ export default function PracticeLandingPage() {
               <div className="space-y-1">
                 <h3 className="font-black text-xl flex items-center gap-2">
                   <TrendingDown className="h-5 w-5 text-amber-500" />
-                  Слабые навыки
+                  {t('practice.hub.cardWeakTitle')}
                 </h3>
                 <p className="text-sm text-muted-foreground font-medium">
-                  Карта сильных и «ржавеющих» навыков
+                  {t('practice.hub.cardWeakDesc')}
                 </p>
               </div>
               {hasWeakSkills && (
@@ -173,18 +174,18 @@ function Stat({
 }
 
 function EmptyState() {
+  const { t } = useLanguage();
   return (
     <Card className="rounded-3xl border-4 p-12 text-center space-y-4">
       <Clock className="h-12 w-12 mx-auto text-muted-foreground" />
-      <h2 className="text-2xl font-black">Карточек пока нет</h2>
+      <h2 className="text-2xl font-black">{t('practice.hub.emptyTitle')}</h2>
       <p className="text-muted-foreground font-medium max-w-md mx-auto">
-        Пройдите хотя бы один интерактивный шаг (translate, match pairs,
-        listening, fill blank, tap words или story) — карточки появятся
-        автоматически.
+        {t('practice.hub.emptyText')}
       </p>
       <Button asChild className="rounded-2xl h-12 px-6 font-bold">
         <Link href="/courses">
-          <Target className="h-4 w-4 mr-2" />К курсам
+          <Target className="h-4 w-4 mr-2" />
+          {t('practice.hub.emptyCta')}
         </Link>
       </Button>
     </Card>

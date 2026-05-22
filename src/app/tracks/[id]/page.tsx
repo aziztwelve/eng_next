@@ -8,8 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Compass, Loader2 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
 export default function TrackDetailPage() {
+  const { t } = useLanguage();
   const params = useParams();
   const idOrCode = (params?.id as string) ?? "";
 
@@ -26,10 +28,11 @@ export default function TrackDetailPage() {
   if (error || !track) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <h2 className="text-3xl font-black">Track not found</h2>
+        <h2 className="text-3xl font-black">{t("tracks.notFound")}</h2>
         <Button asChild variant="outline" className="rounded-2xl border-4 font-bold">
           <Link href="/tracks">
-            <ArrowLeft className="w-4 h-4 mr-2" />К трекам
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {t("tracks.backToTracks")}
           </Link>
         </Button>
       </div>
@@ -41,7 +44,8 @@ export default function TrackDetailPage() {
       <div>
         <Button asChild variant="ghost" className="rounded-xl font-bold mb-4">
           <Link href="/tracks">
-            <ArrowLeft className="w-4 h-4 mr-2" />К трекам
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {t("tracks.backToTracks")}
           </Link>
         </Button>
 
@@ -79,9 +83,9 @@ export default function TrackDetailPage() {
 
       <section className="space-y-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-2xl font-black">Уроки</h2>
+          <h2 className="text-2xl font-black">{t("tracks.lessonsTitle")}</h2>
           <span className="text-sm text-muted-foreground font-bold">
-            {track.lessons?.length ?? 0} шт.
+            {t("tracks.lessonsCount").replace("{n}", String(track.lessons?.length ?? 0))}
           </span>
         </div>
         <TrackLessonsList lessons={track.lessons} />

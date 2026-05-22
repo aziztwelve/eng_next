@@ -1,0 +1,22 @@
+// auth namespace — en
+export const enAuth = {
+  brand: 'LingoLearn',
+  signInTagline: 'Welcome back! Sign in to continue learning.',
+  signUpTagline: 'Create an account to start your language journey.',
+  cardSignInTitle: 'Sign In',
+  cardSignUpTitle: 'Create Account',
+  cardSignInDesc: 'Enter your credentials to access your account',
+  cardSignUpDesc: 'Fill in your details to get started',
+  usernameLabel: 'Username',
+  usernamePlaceholder: 'Your username',
+  emailLabel: 'Email',
+  emailPlaceholder: 'you@example.com',
+  passwordLabel: 'Password',
+  passwordPlaceholder: '••••••••',
+  signInBtn: 'Sign In',
+  signUpBtn: 'Create Account',
+  switchToSignUpQ: "Don't have an account?",
+  switchToSignUpLink: 'Sign up',
+  switchToSignInQ: 'Already have an account?',
+  switchToSignInLink: 'Sign in',
+};

@@ -1,224 +1,250 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-type Language = 'ru' | 'en';
+import { ruCommon } from './i18n-ns/ru/common';
+import { enCommon } from './i18n-ns/en/common';
+import { uzCommon } from './i18n-ns/uz/common';
+import { tgCommon } from './i18n-ns/tg/common';
+import { ruHome } from './i18n-ns/ru/home';
+import { enHome } from './i18n-ns/en/home';
+import { uzHome } from './i18n-ns/uz/home';
+import { tgHome } from './i18n-ns/tg/home';
+import { ruDashboard } from './i18n-ns/ru/dashboard';
+import { enDashboard } from './i18n-ns/en/dashboard';
+import { uzDashboard } from './i18n-ns/uz/dashboard';
+import { tgDashboard } from './i18n-ns/tg/dashboard';
+import { ruCourses } from './i18n-ns/ru/courses';
+import { enCourses } from './i18n-ns/en/courses';
+import { uzCourses } from './i18n-ns/uz/courses';
+import { tgCourses } from './i18n-ns/tg/courses';
+import { ruStudy } from './i18n-ns/ru/study';
+import { enStudy } from './i18n-ns/en/study';
+import { uzStudy } from './i18n-ns/uz/study';
+import { tgStudy } from './i18n-ns/tg/study';
+import { ruTracks } from './i18n-ns/ru/tracks';
+import { enTracks } from './i18n-ns/en/tracks';
+import { uzTracks } from './i18n-ns/uz/tracks';
+import { tgTracks } from './i18n-ns/tg/tracks';
+import { ruLessons } from './i18n-ns/ru/lessons';
+import { enLessons } from './i18n-ns/en/lessons';
+import { uzLessons } from './i18n-ns/uz/lessons';
+import { tgLessons } from './i18n-ns/tg/lessons';
+import { ruQuiz } from './i18n-ns/ru/quiz';
+import { enQuiz } from './i18n-ns/en/quiz';
+import { uzQuiz } from './i18n-ns/uz/quiz';
+import { tgQuiz } from './i18n-ns/tg/quiz';
+import { ruAi } from './i18n-ns/ru/ai';
+import { enAi } from './i18n-ns/en/ai';
+import { uzAi } from './i18n-ns/uz/ai';
+import { tgAi } from './i18n-ns/tg/ai';
+import { ruPractice } from './i18n-ns/ru/practice';
+import { enPractice } from './i18n-ns/en/practice';
+import { uzPractice } from './i18n-ns/uz/practice';
+import { tgPractice } from './i18n-ns/tg/practice';
+import { ruProfile } from './i18n-ns/ru/profile';
+import { enProfile } from './i18n-ns/en/profile';
+import { uzProfile } from './i18n-ns/uz/profile';
+import { tgProfile } from './i18n-ns/tg/profile';
+import { ruFriends } from './i18n-ns/ru/friends';
+import { enFriends } from './i18n-ns/en/friends';
+import { uzFriends } from './i18n-ns/uz/friends';
+import { tgFriends } from './i18n-ns/tg/friends';
+import { ruLeagues } from './i18n-ns/ru/leagues';
+import { enLeagues } from './i18n-ns/en/leagues';
+import { uzLeagues } from './i18n-ns/uz/leagues';
+import { tgLeagues } from './i18n-ns/tg/leagues';
+import { ruGamification } from './i18n-ns/ru/gamification';
+import { enGamification } from './i18n-ns/en/gamification';
+import { uzGamification } from './i18n-ns/uz/gamification';
+import { tgGamification } from './i18n-ns/tg/gamification';
+import { ruFooter } from './i18n-ns/ru/footer';
+import { enFooter } from './i18n-ns/en/footer';
+import { uzFooter } from './i18n-ns/uz/footer';
+import { tgFooter } from './i18n-ns/tg/footer';
+import { ruNotifications } from './i18n-ns/ru/notifications';
+import { enNotifications } from './i18n-ns/en/notifications';
+import { uzNotifications } from './i18n-ns/uz/notifications';
+import { tgNotifications } from './i18n-ns/tg/notifications';
+import { ruLearn } from './i18n-ns/ru/learn';
+import { enLearn } from './i18n-ns/en/learn';
+import { uzLearn } from './i18n-ns/uz/learn';
+import { tgLearn } from './i18n-ns/tg/learn';
+import { ruAuth } from './i18n-ns/ru/auth';
+import { enAuth } from './i18n-ns/en/auth';
+import { uzAuth } from './i18n-ns/uz/auth';
+import { tgAuth } from './i18n-ns/tg/auth';
+import { ruAdmin } from './i18n-ns/ru/admin';
+import { enAdmin } from './i18n-ns/en/admin';
+import { uzAdmin } from './i18n-ns/uz/admin';
+import { tgAdmin } from './i18n-ns/tg/admin';
 
-type Dictionary = {
-  [key in Language]: {
-    [key: string]: string | any;
-  };
-};
+export type Language = 'ru' | 'en' | 'uz' | 'tg';
 
-const dictionary: Dictionary = {
+export const LANGUAGES: Array<{ code: Language; label: string; nativeLabel: string }> = [
+  { code: 'ru', label: 'Russian', nativeLabel: 'Русский' },
+  { code: 'en', label: 'English', nativeLabel: 'English' },
+  { code: 'uz', label: 'Uzbek', nativeLabel: 'Oʻzbekcha' },
+  { code: 'tg', label: 'Tajik', nativeLabel: 'Тоҷикӣ' },
+];
+
+const dictionary = {
   ru: {
-    common: {
-      hearts: 'Жизни',
-      xp: 'Опыт',
-      streak: 'Ударный режим',
-      level: 'Уровень',
-      start: 'Начать',
-      check: 'Проверить',
-      continue: 'Продолжить',
-      back: 'Назад',
-      home: 'Главная',
-      courses: 'Курсы',
-      dashboard: 'Дашборд',
-      learn: 'Учиться',
-      tracks: 'Треки',
-      practice: 'Практика',
-      leagues: 'Лиги',
-      daily: 'Урок дня',
-      explore_tracks: 'Изучай по интересам',
-      standalone: 'Свободный урок',
-      search: 'Поиск...',
-      all: 'Все',
-      enrolled: 'Мои курсы',
-      filters: 'Фильтры',
-      stats: 'Статистика',
-      leaderboard: 'Лидеры',
-      goals: 'Цели',
-      dailyGoal: 'Дневная цель',
-      achievements: 'Достижения',
-      enroll: 'Записаться',
-      start_learning: 'Начать обучение',
-      curriculum: 'Программа',
-      reviews: 'Отзывы',
-      success: 'Отлично!',
-      error: 'Ошибка!',
-      correct: 'Правильно!',
-      incorrect: 'Неправильно. Правильный ответ:',
-      profile: 'Профиль',
-    },
-    gamification: {
-      hearts: 'Жизни',
-      xp: 'Опыт',
-      streak: 'Streak',
-      level: 'Уровень',
-      daily_goal: 'Дневная цель',
-      daily_goal_done: 'Цель дня выполнена!',
-      achievements: 'Достижения',
-      locked: 'Заблокировано',
-      unlocked: 'Получено',
-      freeze: 'Заморозка streak',
-      freeze_active: 'Streak freeze активирован',
-      freeze_confirm: 'Использовать streak freeze?',
-      level_up: 'Уровень повышен!',
-      total_xp: 'Всего XP',
-      weekly_xp: 'XP за неделю',
-      max_streak: 'Макс. streak',
-      no_achievements: 'Достижений пока нет — начни первый шаг!',
-      regen_in: 'до восст.',
-    },
-    home: {
-      heroTitle: 'Учись весело и эффективно',
-      heroSubtitle: 'Осваивай новые навыки с игровыми механиками и реальными проектами.',
-      featuredCourses: 'Популярные курсы',
-      statsTitle: 'Твои успехи за сегодня',
-    },
-    dashboard: {
-      welcome: 'Привет, Студент!',
-      dailyProgress: 'Прогресс за день',
-      weeklyActivity: 'Активность за неделю',
-    },
-    learn: {
-      outOfLives: 'У вас закончились жизни! Подождите восстановления или используйте алмазы.',
-      complete: 'Поздравляем! Вы завершили урок.',
-    },
-    footer: {
-      platform: 'Платформа',
-      legal: 'Юридическая информация',
-      about: 'О нас',
-      contact: 'Контакты',
-      terms: 'Условия использования',
-      privacy: 'Конфиденциальность',
-    },
-    study: {
-      overview: 'Обзор',
-      qa: 'Вопросы и ответы',
-      resources: 'Ресурсы',
-      complete_continue: 'Завершить и продолжить',
-      course_content: 'Содержание курса',
-      next_lesson: 'Следующий урок',
-      previous_lesson: 'Предыдущий урок',
-    }
+    common: ruCommon,
+    home: ruHome,
+    dashboard: ruDashboard,
+    courses: ruCourses,
+    study: ruStudy,
+    tracks: ruTracks,
+    lessons: ruLessons,
+    quiz: ruQuiz,
+    ai: ruAi,
+    practice: ruPractice,
+    profile: ruProfile,
+    friends: ruFriends,
+    leagues: ruLeagues,
+    gamification: ruGamification,
+    footer: ruFooter,
+    notifications: ruNotifications,
+    learn: ruLearn,
+    auth: ruAuth,
+    admin: ruAdmin,
   },
   en: {
-    common: {
-      hearts: 'Hearts',
-      xp: 'XP',
-      streak: 'Streak',
-      level: 'Level',
-      start: 'Start',
-      check: 'Check',
-      continue: 'Continue',
-      back: 'Back',
-      home: 'Home',
-      courses: 'Courses',
-      dashboard: 'Dashboard',
-      learn: 'Learn',
-      tracks: 'Tracks',
-      practice: 'Practice',
-      leagues: 'Leagues',
-      daily: 'Daily Lesson',
-      explore_tracks: 'Explore by topic',
-      standalone: 'Standalone lesson',
-      search: 'Search...',
-      all: 'All',
-      enrolled: 'My Courses',
-      filters: 'Filters',
-      stats: 'Stats',
-      leaderboard: 'Leaderboard',
-      goals: 'Goals',
-      dailyGoal: 'Daily Goal',
-      achievements: 'Achievements',
-      enroll: 'Enroll',
-      start_learning: 'Start Learning',
-      curriculum: 'Curriculum',
-      reviews: 'Reviews',
-      success: 'Great!',
-      error: 'Error!',
-      correct: 'Correct!',
-      incorrect: 'Incorrect. Correct answer:',
-      profile: 'Profile',
-    },
-    gamification: {
-      hearts: 'Hearts',
-      xp: 'XP',
-      streak: 'Streak',
-      level: 'Level',
-      daily_goal: 'Daily goal',
-      daily_goal_done: 'Daily goal complete!',
-      achievements: 'Achievements',
-      locked: 'Locked',
-      unlocked: 'Unlocked',
-      freeze: 'Streak freeze',
-      freeze_active: 'Streak freeze activated',
-      freeze_confirm: 'Use a streak freeze?',
-      level_up: 'Level up!',
-      total_xp: 'Total XP',
-      weekly_xp: 'Weekly XP',
-      max_streak: 'Max streak',
-      no_achievements: 'No achievements yet — finish your first step!',
-      regen_in: 'until next',
-    },
-    home: {
-      heroTitle: 'Learn Fun & Effectively',
-      heroSubtitle: 'Master new skills with gamified mechanics and real-world projects.',
-      featuredCourses: 'Featured Courses',
-      statsTitle: "Today's Progress",
-    },
-    dashboard: {
-      welcome: 'Hello, Student!',
-      dailyProgress: 'Daily Progress',
-      weeklyActivity: 'Weekly Activity',
-    },
-    learn: {
-      outOfLives: 'You are out of lives! Wait for recovery or use gems.',
-      complete: 'Congratulations! You completed the lesson.',
-    },
-    footer: {
-      platform: 'Platform',
-      legal: 'Legal',
-      about: 'About',
-      contact: 'Contact',
-      terms: 'Terms',
-      privacy: 'Privacy',
-    },
-    study: {
-      overview: 'Overview',
-      qa: 'Q&A',
-      resources: 'Resources',
-      complete_continue: 'Complete & Continue',
-      course_content: 'Course Content',
-      next_lesson: 'Next Lesson',
-      previous_lesson: 'Previous Lesson',
-    }
+    common: enCommon,
+    home: enHome,
+    dashboard: enDashboard,
+    courses: enCourses,
+    study: enStudy,
+    tracks: enTracks,
+    lessons: enLessons,
+    quiz: enQuiz,
+    ai: enAi,
+    practice: enPractice,
+    profile: enProfile,
+    friends: enFriends,
+    leagues: enLeagues,
+    gamification: enGamification,
+    footer: enFooter,
+    notifications: enNotifications,
+    learn: enLearn,
+    auth: enAuth,
+    admin: enAdmin,
   },
-};
+  uz: {
+    common: uzCommon,
+    home: uzHome,
+    dashboard: uzDashboard,
+    courses: uzCourses,
+    study: uzStudy,
+    tracks: uzTracks,
+    lessons: uzLessons,
+    quiz: uzQuiz,
+    ai: uzAi,
+    practice: uzPractice,
+    profile: uzProfile,
+    friends: uzFriends,
+    leagues: uzLeagues,
+    gamification: uzGamification,
+    footer: uzFooter,
+    notifications: uzNotifications,
+    learn: uzLearn,
+    auth: uzAuth,
+    admin: uzAdmin,
+  },
+  tg: {
+    common: tgCommon,
+    home: tgHome,
+    dashboard: tgDashboard,
+    courses: tgCourses,
+    study: tgStudy,
+    tracks: tgTracks,
+    lessons: tgLessons,
+    quiz: tgQuiz,
+    ai: tgAi,
+    practice: tgPractice,
+    profile: tgProfile,
+    friends: tgFriends,
+    leagues: tgLeagues,
+    gamification: tgGamification,
+    footer: tgFooter,
+    notifications: tgNotifications,
+    learn: tgLearn,
+    auth: tgAuth,
+    admin: tgAdmin,
+  },
+} as const;
+
+const STORAGE_KEY = 'app.lang';
+const DEFAULT_LANG: Language = 'ru';
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (path: string) => string;
+  t: (path: string, fallback?: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguage] = useState<Language>('ru');
+  const [language, setLanguageState] = useState<Language>(DEFAULT_LANG);
 
-  const t = (path: string): string => {
-    const keys = path.split('.');
-    let result: any = dictionary[language];
-    for (const key of keys) {
-      if (result && result[key]) {
-        result = result[key];
-      } else {
-        return path;
+  // Восстанавливаем язык из localStorage после mount (SSR-safe).
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY);
+      if (stored === 'ru' || stored === 'en' || stored === 'uz' || stored === 'tg') {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setLanguageState(stored);
+      }
+    } catch {
+      /* localStorage может быть запрещён в private-режиме */
+    }
+  }, []);
+
+  // Синхронизируем <html lang="..."> для accessibility.
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = language;
+    }
+  }, [language]);
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, lang);
+      } catch {
+        /* ignore */
       }
     }
-    return result;
+  };
+
+  const t = (path: string, fallback?: string): string => {
+    const keys = path.split('.');
+    let result: unknown = dictionary[language];
+    for (const key of keys) {
+      if (result && typeof result === 'object' && key in (result as Record<string, unknown>)) {
+        result = (result as Record<string, unknown>)[key];
+      } else {
+        // Фоллбэк: пробуем RU словарь (на случай если EN-ключ отсутствует).
+        if (language !== 'ru') {
+          let ruResult: unknown = dictionary.ru;
+          for (const k of keys) {
+            if (ruResult && typeof ruResult === 'object' && k in (ruResult as Record<string, unknown>)) {
+              ruResult = (ruResult as Record<string, unknown>)[k];
+            } else {
+              ruResult = undefined;
+              break;
+            }
+          }
+          if (typeof ruResult === 'string') return ruResult;
+        }
+        return fallback ?? path;
+      }
+    }
+    return typeof result === 'string' ? result : (fallback ?? path);
   };
 
   return (
