@@ -78,6 +78,10 @@ import { ruAdmin } from './i18n-ns/ru/admin';
 import { enAdmin } from './i18n-ns/en/admin';
 import { uzAdmin } from './i18n-ns/uz/admin';
 import { tgAdmin } from './i18n-ns/tg/admin';
+import { ruOnboarding } from './i18n-ns/ru/onboarding';
+import { enOnboarding } from './i18n-ns/en/onboarding';
+import { uzOnboarding } from './i18n-ns/uz/onboarding';
+import { tgOnboarding } from './i18n-ns/tg/onboarding';
 
 export type Language = 'ru' | 'en' | 'uz' | 'tg';
 
@@ -109,6 +113,7 @@ const dictionary = {
     learn: ruLearn,
     auth: ruAuth,
     admin: ruAdmin,
+    onboarding: ruOnboarding,
   },
   en: {
     common: enCommon,
@@ -130,6 +135,7 @@ const dictionary = {
     learn: enLearn,
     auth: enAuth,
     admin: enAdmin,
+    onboarding: enOnboarding,
   },
   uz: {
     common: uzCommon,
@@ -151,6 +157,7 @@ const dictionary = {
     learn: uzLearn,
     auth: uzAuth,
     admin: uzAdmin,
+    onboarding: uzOnboarding,
   },
   tg: {
     common: tgCommon,
@@ -172,6 +179,7 @@ const dictionary = {
     learn: tgLearn,
     auth: tgAuth,
     admin: tgAdmin,
+    onboarding: tgOnboarding,
   },
 } as const;
 

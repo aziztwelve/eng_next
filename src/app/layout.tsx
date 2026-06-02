@@ -5,6 +5,7 @@ import { LanguageProvider } from "@/lib/i18n";
 import { QueryProvider } from "@/lib/query-provider";
 import { Toaster } from "sonner";
 import { Layout } from "@/components/layout";
+import { GuestBootstrap } from "@/components/onboarding/GuestBootstrap";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <LanguageProvider>
+            <GuestBootstrap />
             <Layout>
               {children}
             </Layout>

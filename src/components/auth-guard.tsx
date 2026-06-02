@@ -19,6 +19,7 @@ const PUBLIC_ROUTES = [
   "/auth",
   "/courses",
   "/tracks",
+  "/onboarding",
 ];
 
 function isPublicPath(pathname: string): boolean {
