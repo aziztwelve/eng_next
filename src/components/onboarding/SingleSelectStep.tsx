@@ -78,7 +78,9 @@ export function SingleSelectStep({
       </CollapsibleOptions>
 
       <ContinueButton
-        onClick={() => picked && onContinue(picked)}
+        onClick={() => {
+          if (picked) onContinue(picked);
+        }}
         disabled={!picked}
         pending={pending}
       />
