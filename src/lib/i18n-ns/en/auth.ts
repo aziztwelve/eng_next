@@ -1,6 +1,6 @@
 // auth namespace — en
 export const enAuth = {
-  brand: 'LingoLearn',
+  brand: 'LingoIQ',
   signInTagline: 'Welcome back! Sign in to continue learning.',
   signUpTagline: 'Create an account to start your language journey.',
   cardSignInTitle: 'Sign In',

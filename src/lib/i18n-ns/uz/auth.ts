@@ -1,6 +1,6 @@
 // auth namespace — uz
 export const uzAuth = {
-  brand: 'LingoLearn',
+  brand: 'LingoIQ',
   signInTagline: 'Xush qaytib keldingiz! Oʻqishni davom ettirish uchun kiring.',
   signUpTagline: 'Til sayohatingizni boshlash uchun hisob yarating.',
   cardSignInTitle: 'Kirish',

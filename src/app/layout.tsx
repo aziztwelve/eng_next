@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LingoLearn",
+  title: "LingoIQ",
   description: "Learn languages the fun way",
 };
 

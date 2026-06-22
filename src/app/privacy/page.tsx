@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Политика конфиденциальности — Ruya",
+  title: "Политика конфиденциальности — LingoIQ",
   description:
-    "Политика конфиденциальности приложения Ruya: какие данные мы собираем, как используем и как их удалить.",
+    "Политика конфиденциальности приложения LingoIQ: какие данные мы собираем, как используем и как их удалить.",
 };
 
 // ВАЖНО: перед публикацией замените значения ниже на ваши реальные данные.
-const COMPANY_NAME = "Ruya"; // юр. лицо / ИП или название разработчика
-const CONTACT_EMAIL = "support@ruya.app"; // ЗАМЕНИТЕ на ваш реальный email
+const COMPANY_NAME = "LingoIQ"; // юр. лицо / ИП или название разработчика
+const CONTACT_EMAIL = "aziztwelve@gmail.com"; // реальный контактный email разработчика
 const EFFECTIVE_DATE = "16 июня 2026 г.";
 
 export default function PrivacyPolicyPage() {
@@ -18,7 +18,7 @@ export default function PrivacyPolicyPage() {
         Политика конфиденциальности
       </h1>
       <p className="mb-8 text-sm text-gray-500">
-        Приложение «Ruya» (пакет <code>com.aziztwelve.engmob</code>). Дата
+        Приложение «LingoIQ» (пакет <code>com.aziztwelve.engmob</code>). Дата
         вступления в силу: {EFFECTIVE_DATE}.
       </p>
 
@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
         <p>
           Настоящая Политика конфиденциальности описывает, как {COMPANY_NAME}{" "}
           (далее — «мы», «нас», «наш») собирает, использует, хранит и защищает
-          персональные данные пользователей мобильного приложения «Ruya» и
+          персональные данные пользователей мобильного приложения «LingoIQ» и
           связанного веб-сервиса (далее — «Приложение»). Используя Приложение,
           вы соглашаетесь с условиями настоящей Политики.
         </p>

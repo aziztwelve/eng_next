@@ -43,7 +43,7 @@ export function Navbar() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_4px_0_0_rgba(0,0,0,0.2)] active:translate-y-1 active:shadow-none transition-all">
               <Zap className="h-6 w-6 fill-current" />
             </div>
-            <span className="text-xl font-bold tracking-tight hidden sm:block">LingoLearn</span>
+            <span className="text-xl font-bold tracking-tight hidden sm:block">LingoIQ</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">

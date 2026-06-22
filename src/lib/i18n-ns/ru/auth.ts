@@ -1,6 +1,6 @@
 // auth namespace — ru
 export const ruAuth = {
-  brand: 'LingoLearn',
+  brand: 'LingoIQ',
   signInTagline: 'С возвращением! Войдите, чтобы продолжить обучение.',
   signUpTagline: 'Создайте аккаунт, чтобы начать своё языковое путешествие.',
   cardSignInTitle: 'Вход',

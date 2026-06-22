@@ -1,6 +1,6 @@
 // auth namespace — tg
 export const tgAuth = {
-  brand: 'LingoLearn',
+  brand: 'LingoIQ',
   signInTagline: 'Бо бозгашти шумо! Барои идомаи омӯзиш ворид шавед.',
   signUpTagline: 'Барои оғози сафари забонии худ ҳисоб созед.',
   cardSignInTitle: 'Воридшавӣ',

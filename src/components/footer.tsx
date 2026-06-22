@@ -11,7 +11,7 @@ export function Footer() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-slate-100">LingoLearn</h3>
+            <h3 className="text-lg font-bold text-slate-100">LingoIQ</h3>
             <p className="text-sm text-slate-400 max-w-xs">
               {t("home.heroSubtitle")}
             </p>
@@ -79,7 +79,7 @@ export function Footer() {
         
         <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-slate-500">
-            © 2026 LingoLearn. All rights reserved.
+            © 2026 LingoIQ. All rights reserved.
           </p>
           <div className="flex space-x-6">
             {/* Social icons can go here if needed */}
