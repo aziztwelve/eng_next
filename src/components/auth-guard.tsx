@@ -20,6 +20,11 @@ const PUBLIC_ROUTES = [
   "/courses",
   "/tracks",
   "/onboarding",
+  // Юридические / публичные страницы (требуются Google Play, должны быть без логина)
+  "/privacy",
+  "/terms",
+  "/about",
+  "/contact",
 ];
 
 function isPublicPath(pathname: string): boolean {
