@@ -13,11 +13,11 @@ const EFFECTIVE_DATE = "16 июня 2026 г.";
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-12 text-gray-800">
-      <h1 className="mb-2 text-3xl font-bold text-gray-900">
+    <main className="mx-auto max-w-3xl px-6 py-12 text-gray-200">
+      <h1 className="mb-2 text-3xl font-bold text-white">
         Политика конфиденциальности
       </h1>
-      <p className="mb-8 text-sm text-gray-500">
+      <p className="mb-8 text-sm text-gray-400">
         Приложение «LingoIQ» (пакет <code>com.aziztwelve.engmob</code>). Дата
         вступления в силу: {EFFECTIVE_DATE}.
       </p>
@@ -132,7 +132,7 @@ export default function PrivacyPolicyPage() {
           Чтобы удалить аккаунт и все связанные данные, отправьте запрос на{" "}
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            className="text-blue-600 underline"
+            className="text-blue-400 underline"
           >
             {CONTACT_EMAIL}
           </a>
@@ -160,7 +160,7 @@ export default function PrivacyPolicyPage() {
           По любым вопросам, связанным с конфиденциальностью, свяжитесь с нами:{" "}
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            className="text-blue-600 underline"
+            className="text-blue-400 underline"
           >
             {CONTACT_EMAIL}
           </a>
@@ -180,7 +180,7 @@ function Section({
 }) {
   return (
     <section className="mb-8 space-y-3 leading-relaxed">
-      <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+      <h2 className="text-xl font-semibold text-white">{title}</h2>
       {children}
     </section>
   );
