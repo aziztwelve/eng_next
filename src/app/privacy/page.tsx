@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 // ВАЖНО: перед публикацией замените значения ниже на ваши реальные данные.
 const COMPANY_NAME = "LingoIQ"; // юр. лицо / ИП или название разработчика
-const CONTACT_EMAIL = "aziztwelve@gmail.com"; // реальный контактный email разработчика
+const CONTACT_EMAIL = "privacy@lingoiq.online"; // контактный email для вопросов по приватности
 const EFFECTIVE_DATE = "16 июня 2026 г.";
 
 export default function PrivacyPolicyPage() {

@@ -1,4 +1,4 @@
-// onboarding namespace — uz
-// MVP: re-export RU. UZ-копи добавим позже (требуется ревью носителем).
-
-export { ruOnboarding as uzOnboarding } from '../ru/onboarding';
+// onboarding namespace — uz.
+//
+// Sprint 2: пустой — фолбэк на RU. Полный UZ-перевод — Sprint 6.
+export const uzOnboarding = {};

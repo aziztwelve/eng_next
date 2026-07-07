@@ -1,4 +1,4 @@
-// onboarding namespace — tg
-// MVP: re-export RU. TG-копи добавим позже (требуется ревью носителем).
-
-export { ruOnboarding as tgOnboarding } from '../ru/onboarding';
+// onboarding namespace — tg.
+//
+// Sprint 2: пустой — фолбэк на RU. Полный TG-перевод — Sprint 6.
+export const tgOnboarding = {};

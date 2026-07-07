@@ -1,8 +1,5 @@
-// onboarding namespace — en
+// onboarding namespace — en.
 //
-// MVP: re-export RU. EN-копи добавим в Sprint 6 (см. spec acceptance criteria).
-// До этого — fallback на RU через `t()` всё равно работает, но лучше явно
-// прокинуть тот же объект, чтобы a11y `<html lang="en">` не висел при
-// отсутствии ключей.
-
-export { ruOnboarding as enOnboarding } from '../ru/onboarding';
+// Sprint 2: пока пустой объект — t() автоматически фолбэчится на RU
+// (см. i18n.tsx). Полный EN-перевод — Sprint 6.
+export const enOnboarding = {};
