@@ -38,6 +38,11 @@ export class ApiClient {
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
+      // Язык контента (треки/уроки/шаги): course-service резолвит локаль
+      // с фолбэками. Хук-контекст недоступен вне React — читаем напрямую.
+      'Accept-Language':
+        (typeof window !== 'undefined' && window.localStorage.getItem('app.lang')) ||
+        'ru',
       ...(options.headers as Record<string, string>),
     };
 
