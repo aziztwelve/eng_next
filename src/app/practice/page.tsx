@@ -143,6 +143,7 @@ export default function PracticeLandingPage() {
             </div>
           </Card>
         </Link>
+
       </div>
     </div>
   );

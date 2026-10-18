@@ -20,13 +20,11 @@ import type { UiLanguage } from '../supported-languages';
 
 export type TestimonialGoal =
   | 'work'         // работа / карьера
+  | 'business_english' // деловой английский
   | 'travel'       // путешествия
   | 'exam'         // экзамены / учёба
-  | 'relocation'   // переезд
-  | 'social'       // друзья / общение
-  | 'content'      // фильмы / книги
-  | 'fun'          // для удовольствия
-  | 'brain'        // тренировка мозга
+  | 'speaking'     // разговорная практика
+  | 'listening_shadowing' // Listening & Shadowing
   | 'study';       // школа / университет
 
 export interface Testimonial {
@@ -53,7 +51,7 @@ export const TESTIMONIALS: Testimonial[] = [
     avatarEmoji: '👩‍💻',
     age: 28,
     stars: 5,
-    goals: ['work', 'social'],
+    goals: ['work'],
     name: 'Алина',
     badge: {
       ru: '60 дней подряд',
@@ -73,7 +71,7 @@ export const TESTIMONIALS: Testimonial[] = [
     avatarEmoji: '🧑‍🎒',
     age: 24,
     stars: 5,
-    goals: ['travel', 'fun', 'content'],
+    goals: ['travel'],
     name: 'Дамир',
     badge: {
       ru: 'Учусь 4 месяца',
@@ -109,11 +107,11 @@ export const TESTIMONIALS: Testimonial[] = [
     },
   },
   {
-    id: 'sergey-brain',
+    id: 'sergey-listening-shadowing',
     avatarEmoji: '🧑‍🦳',
     age: 54,
     stars: 4,
-    goals: ['brain', 'fun', 'content'],
+    goals: ['listening_shadowing'],
     name: 'Сергей',
     badge: {
       ru: 'Учусь после 50',
@@ -129,23 +127,23 @@ export const TESTIMONIALS: Testimonial[] = [
     },
   },
   {
-    id: 'aisulu-relocation',
+    id: 'aisulu-speaking',
     avatarEmoji: '👩‍🔬',
     age: 31,
     stars: 5,
-    goals: ['relocation', 'work', 'social'],
+    goals: ['speaking', 'work'],
     name: 'Айсулу',
     badge: {
-      ru: 'Переехала в Берлин',
-      en: 'Moved to Berlin',
-      uz: 'Berlinga koʻchdim',
-      tg: 'Ба Берлин кӯчидам',
+      ru: 'Заговорила по-немецки',
+      en: 'Started speaking German',
+      uz: 'Nemischa gapira boshladim',
+      tg: 'Ба олмонӣ гап заданро оғоз кардам',
     },
     quote: {
-      ru: 'Переезд в Германию был как прыжок. Lumi помог не утонуть в первые недели — теперь спокойно решаю банк, аренду и работу на немецком.',
-      en: 'Moving to Germany felt like a leap. Lumi kept me afloat in the first weeks — now I handle bank, rent and work in German calmly.',
-      uz: 'Germaniyaga koʻchish katta sakrash boʻldi. Lumi birinchi haftalarda gʻarq boʻlmaslikka yordam berdi — endi nemis tilida bank, ijara va ishni xotirjam hal qilaman.',
-      tg: 'Кӯчиш ба Олмон гӯё ҷаҳише буд. Lumi дар ҳафтаҳои аввал кӯмак кард — ҳоло бонк, иҷора ва корро ба олмонӣ ором ҳал мекунам.',
+      ru: 'Сначала боялась говорить по-немецки. Lumi помог начать с коротких диалогов — теперь спокойно общаюсь на работе и в повседневных ситуациях.',
+      en: 'At first I was afraid to speak German. Lumi helped me start with short dialogues — now I communicate calmly at work and in everyday situations.',
+      uz: 'Avval nemischa gapirishdan qoʻrqardim. Lumi qisqa dialoglardan boshlashga yordam berdi — endi ishda va kundalik vaziyatlarda bemalol gaplashaman.',
+      tg: 'Дар аввал аз олмонӣ гап задан метарсидам. Lumi ба ман кӯмак кард, ки аз муколамаҳои кӯтоҳ оғоз кунам — ҳоло дар кор ва зиндагии ҳаррӯза озодона сӯҳбат мекунам.',
     },
   },
   {
@@ -153,7 +151,7 @@ export const TESTIMONIALS: Testimonial[] = [
     avatarEmoji: '🎮',
     age: 17,
     stars: 5,
-    goals: ['content', 'fun'],
+    goals: ['listening_shadowing'],
     name: 'Тимур',
     badge: {
       ru: 'Школьник',

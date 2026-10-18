@@ -22,8 +22,7 @@ export type ReminderSlot = 'morning' | 'day' | 'evening' | 'flex';
 export type PaywallChoice = 'annual' | 'monthly' | 'dismissed' | 'special_offer';
 
 export type GoalKey =
-  | 'work' | 'exam' | 'travel' | 'relocation' | 'study'
-  | 'social' | 'content' | 'fun' | 'brain';
+  | 'work' | 'business_english' | 'exam' | 'travel' | 'speaking' | 'study' | 'listening_shadowing';
 
 /* ──────────────────────── server shapes ──────────────────────── */
 

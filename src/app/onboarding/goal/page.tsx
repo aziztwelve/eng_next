@@ -12,14 +12,12 @@ import type { GoalKey } from '@/types/onboarding';
 
 const GOALS: { id: GoalKey; emoji: string }[] = [
   { id: 'work',       emoji: '💼' },
+  { id: 'business_english', emoji: '📈' },
   { id: 'exam',       emoji: '📝' },
   { id: 'travel',     emoji: '✈️' },
-  { id: 'relocation', emoji: '🌍' },
+  { id: 'speaking', emoji: '🌍' },
   { id: 'study',      emoji: '🎓' },
-  { id: 'social',     emoji: '💬' },
-  { id: 'content',    emoji: '🎬' },
-  { id: 'fun',        emoji: '✨' },
-  { id: 'brain',      emoji: '🧠' },
+  { id: 'listening_shadowing', emoji: '🎧' },
 ];
 
 export default function GoalStep() {

@@ -8,6 +8,10 @@ import { FillBlankStep } from './FillBlankStep';
 import { TapWordsStep } from './TapWordsStep';
 import { QuizStep } from './QuizStep';
 import { StoryStep } from './StoryStep';
+import { ChooseDefinitionStep } from './ChooseDefinitionStep';
+import { ListenChooseWordStep } from './ListenChooseWordStep';
+import { MissingWordStep } from './MissingWordStep';
+import { CompleteChatStep } from './CompleteChatStep';
 import type { StepComponentProps } from './types';
 
 /**
@@ -31,6 +35,14 @@ export function StepRenderer(props: StepComponentProps) {
       return <QuizStep {...props} />;
     case 'story':
       return <StoryStep {...props} />;
+    case 'choose_definition':
+      return <ChooseDefinitionStep {...props} />;
+    case 'listen_choose_word':
+      return <ListenChooseWordStep {...props} />;
+    case 'missing_word':
+      return <MissingWordStep {...props} />;
+    case 'complete_chat':
+      return <CompleteChatStep {...props} />;
     default:
       return (
         <Card className="rounded-2xl border-4 p-6 font-medium text-muted-foreground">
@@ -40,4 +52,4 @@ export function StepRenderer(props: StepComponentProps) {
   }
 }
 
-export { TranslateStep, MatchPairsStep, ListeningStep, FillBlankStep, TapWordsStep, QuizStep, StoryStep };
+export { TranslateStep, MatchPairsStep, ListeningStep, FillBlankStep, TapWordsStep, QuizStep, StoryStep, ChooseDefinitionStep, ListenChooseWordStep, MissingWordStep, CompleteChatStep };

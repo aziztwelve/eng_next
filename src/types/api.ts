@@ -154,11 +154,15 @@ export type StepType =
   | 'listening'
   | 'fill_blank'
   | 'tap_words'
-  | 'story';
+  | 'story'
+  | 'choose_definition'
+  | 'listen_choose_word'
+  | 'missing_word'
+  | 'complete_chat';
 
 /** Все phase-2 интерактивные типы, проходящие через step-validation-service. */
 export const INTERACTIVE_STEP_TYPES: StepType[] = [
-  'quiz', 'translate', 'match_pairs', 'listening', 'fill_blank', 'tap_words', 'story',
+  'quiz', 'translate', 'match_pairs', 'listening', 'fill_blank', 'tap_words', 'story', 'choose_definition', 'listen_choose_word', 'missing_word', 'complete_chat',
 ];
 
 export function isInteractiveStep(t: StepType): boolean {
@@ -380,7 +384,8 @@ export interface LessonWithSteps {
 // LEARNING TRACKS (Phase 0)
 // ============================================
 
-export type TrackType = 'thematic' | 'daily' | 'stories' | 'podcast';
+/** Deprecated compatibility field. New tracks have no classification. */
+export type TrackType = '' | 'thematic' | 'daily' | 'stories' | 'podcast';
 
 export interface Track {
   id: string;
@@ -390,7 +395,7 @@ export interface Track {
   icon_url: string;
   language: string;
   level: string;
-  track_type: TrackType | string;
+  track_type?: TrackType | string;
   is_published: boolean;
   sort_order: number;
   created_by?: string;

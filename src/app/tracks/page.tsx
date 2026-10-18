@@ -5,27 +5,14 @@ import { useTracks } from "@/hooks/use-tracks";
 import { TrackCard } from "@/components/tracks/TrackCard";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Compass, Loader2, Search } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
-import type { TrackType } from "@/types/api";
-
-const TYPE_FILTERS: { value: TrackType | ""; label: string }[] = [
-  { value: "", label: "All" },
-  { value: "daily", label: "Daily" },
-  { value: "stories", label: "Stories" },
-  { value: "podcast", label: "Podcast" },
-  { value: "thematic", label: "Topics" },
-];
 
 export default function TracksPage() {
   const { t } = useLanguage();
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState<TrackType | "">("");
-
   const { data, isLoading, error } = useTracks({
     search: search || undefined,
-    track_type: typeFilter || undefined,
     limit: 60,
   });
 
@@ -54,19 +41,6 @@ export default function TracksPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-      </div>
-
-      <div className="flex gap-2 flex-wrap">
-        {TYPE_FILTERS.map((f) => (
-          <Button
-            key={f.value || "all"}
-            variant={typeFilter === f.value ? "default" : "outline"}
-            onClick={() => setTypeFilter(f.value)}
-            className="rounded-full h-10 px-5 font-bold border-2"
-          >
-            {f.label}
-          </Button>
-        ))}
       </div>
 
       {isLoading && (

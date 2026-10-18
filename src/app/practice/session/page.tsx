@@ -35,6 +35,7 @@ import {
   type SubmitAnswerResponse,
 } from '@/types/api';
 import { useLanguage } from '@/lib/i18n';
+import { stepTitle } from '@/lib/step-titles';
 
 /**
  * /practice/session — одна сессия практики.
@@ -266,7 +267,7 @@ function CurrentStepCard({
   startedAtRef: React.RefObject<number>;
   onAdvance: () => void;
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const step = useStep(item.step_id);
   const submit = useStepSubmit();
   const lastResultRef = useRef<{ stepId: string; correct: boolean } | null>(null);
@@ -331,7 +332,7 @@ function CurrentStepCard({
     return (
       <Card className="rounded-3xl border-4 p-8 space-y-4">
         <SourceBadge item={item} />
-        <h2 className="text-xl font-black">{step.data.step.title}</h2>
+        <h2 className="text-xl font-black">{stepTitle(step.data.step.type, language)}</h2>
         <p className="text-muted-foreground font-medium">
           {t('practice.session.nonInteractive')}
         </p>
@@ -355,7 +356,7 @@ function CurrentStepCard({
         <Badge variant="outline" className="rounded-full px-3 py-1 font-bold border-2 uppercase">
           {step.data.step.type}
         </Badge>
-        <h2 className="text-2xl font-black">{step.data.step.title}</h2>
+        <h2 className="text-2xl font-black">{stepTitle(step.data.step.type, language)}</h2>
       </div>
 
       <StepRenderer step={step.data.step} onSubmit={handleSubmit} onContinue={handleContinue} />

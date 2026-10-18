@@ -22,6 +22,7 @@ import {
   Loader2
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
+import { stepTitle } from "@/lib/step-titles";
 import { cn } from "@/lib/utils";
 
 interface Step {
@@ -58,7 +59,7 @@ interface Course {
 }
 
 export default function StudyPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const params = useParams();
   const courseId = params?.courseId as string;
   
@@ -428,7 +429,7 @@ export default function StudyPage() {
                                   style={{ borderColor: sIdx === currentStepIndex ? 'var(--primary)' : '#475569' }}>
                                   {sIdx + 1}
                                 </span>
-                                {step.title}
+                                {stepTitle(step.type, language)}
                               </button>
                             ))}
                           </div>
